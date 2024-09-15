@@ -1,0 +1,6 @@
+
+struct Simple {
+    u8 byte;
+    u16 value;
+    u8 next;
+}
