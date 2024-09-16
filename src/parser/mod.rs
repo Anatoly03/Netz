@@ -5,7 +5,7 @@ pub mod identifier;
 pub mod interface;
 // pub mod network;
 // pub mod reader;
-// pub mod structure;
+pub mod structure;
 
 /// The primitive types that the network file accepts per default.
 /// This includes integers, a boolean and string value.

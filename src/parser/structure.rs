@@ -3,47 +3,69 @@ use nom::{
 };
 
 use super::{
-    field::NetworkField,
-    general::{expect_space, identifier, trim},
+    comment::NetworkComment, field::NetworkField, general::{expect_space, trim}, identifier::NetworkIdentifier, interface::NetworkParser
 };
 
 #[derive(Debug, PartialEq)]
 pub struct NetworkStruct {
-    identifier: String,
+    identity: String,
     fields: Vec<NetworkField>,
 }
 
 impl NetworkStruct {
-    pub fn new(identifier: String) -> Self {
+    pub fn new(identity: String) -> Self {
         NetworkStruct {
-            identifier,
+            identity,
             fields: vec![],
         }
     }
+}
 
-    pub fn parse(input: &str) -> IResult<&str, NetworkStruct> {
-        // expect 'struct' keyword
-        let (input, _) = trim(input)?;
+impl NetworkParser for NetworkStruct {
+    fn parse(input: &str) -> IResult<&str, NetworkStruct> {
+        let (input, comment) = NetworkComment::parse(input)?;
         let (input, _) = tag("struct")(input)?;
 
         // expect structure name
-        let (input, _) = expect_space(input)?;
-        let (input, struct_name) = identifier(input)?;
-        let mut network_struct = NetworkStruct::new(struct_name.to_owned());
+        let (input, struct_name) = NetworkIdentifier::parse(input)?;
+        let mut network_struct = NetworkStruct::new(struct_name.identity.to_owned());
 
         // expect '{' symbol
-        let (input, _) = trim(input)?;
+        let (input, _) = NetworkComment::parse(input)?;
         let (input, _) = tag("{")(input)?;
 
         // expect field declarations
-        let (input, fields) = many0(|input| NetworkField::parse(input))?;
+        // let (input, fields) = many0(|input| NetworkField::parse(input))?;
 
-        while let (input, Some(field)) = opt(NetworkField)(input)? {
-            let (input, _) = trim(input)?;
-        };
+        // while let (input, Some(field)) = opt(NetworkField)(input)? {
+        //     let (input, _) = trim(input)?;
+        // };
 
-        let (input, _) = trim(input)?;
+        let (input, _) = NetworkComment::parse(input)?;
         let (input, _) = tag("}")(input)?;
         Ok((input, network_struct))
+    }
+}
+
+
+#[cfg(test)]
+mod struct_test {
+    use super::*;
+
+    /// Tests a simple structure without declared fields.
+    #[test]
+    fn simple_struct() {
+        let (input, network_struct) = NetworkStruct::parse("struct Struct {}").unwrap();
+        assert_eq!(network_struct.identity, "Struct");
+    }
+
+    /// Tests a simple structure with two declared fields of types
+    /// `Foo` and `Bar`
+    #[test]
+    #[ignore = "structs do not support fields"]
+    fn foobar_struct() {
+        let (input, network_struct) = NetworkStruct::parse("struct FooBar { Foo foo; Bar bar; }").unwrap();
+        assert_eq!(network_struct.identity, "FooBar");
+        assert_eq!(network_struct.fields.len(), 2);
     }
 }
