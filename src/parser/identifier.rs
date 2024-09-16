@@ -1,4 +1,4 @@
-use super::{comment::NetworkComment, interface::NetworkParser};
+use super::{comment::Comment, interface::NetworkParser};
 use nom::{
     bytes::complete::take_while_m_n,
     character::complete::alphanumeric1,
@@ -27,7 +27,7 @@ impl NetworkParser for NetworkIdentifier {
     ///
     /// @reference https://stackoverflow.com/a/61329008/16002144
     fn parse(input: &str) -> IResult<&str, Self> {
-        let (input, comment) = NetworkComment::parse(input)?;
+        let (input, comment) = Comment::parse(input)?;
 
         let (input, identity) = recognize(pair(
             take_while_m_n(1, 1, |c: char| c.is_ascii_alphabetic()),

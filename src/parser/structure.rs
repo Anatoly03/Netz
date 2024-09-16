@@ -3,13 +3,13 @@ use nom::{
 };
 
 use super::{
-    comment::NetworkComment, field::NetworkField, general::{expect_space, trim}, identifier::NetworkIdentifier, interface::NetworkParser
+    comment::Comment, field::StructField, general::{expect_space, trim}, identifier::NetworkIdentifier, interface::NetworkParser
 };
 
 #[derive(Debug, PartialEq)]
 pub struct NetworkStruct {
     identity: String,
-    fields: Vec<NetworkField>,
+    fields: Vec<StructField>,
 }
 
 impl NetworkStruct {
@@ -23,20 +23,20 @@ impl NetworkStruct {
 
 impl NetworkParser for NetworkStruct {
     fn parse(input: &str) -> IResult<&str, NetworkStruct> {
-        let (input, comment) = NetworkComment::parse(input)?;
+        let (input, comment) = Comment::parse(input)?;
         let (input, _) = tag("struct")(input)?;
 
         // expect structure name
         let (input, struct_name) = NetworkIdentifier::parse(input)?;
 
         // expect '{' symbol
-        let (input, _) = NetworkComment::parse(input)?;
+        let (input, _) = Comment::parse(input)?;
         let (input, _) = tag("{")(input)?;
 
         // expect field declarations
-        let (input, fields) = many0(NetworkField::parse)(input)?;
+        let (input, fields) = many0(StructField::parse)(input)?;
 
-        let (input, _) = NetworkComment::parse(input)?;
+        let (input, _) = Comment::parse(input)?;
         let (input, _) = tag("}")(input)?;
 
         Ok((input, Self {

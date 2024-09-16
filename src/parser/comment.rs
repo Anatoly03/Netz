@@ -14,11 +14,11 @@ use super::interface::NetworkParser;
 
 /// A network comment is a comment
 #[derive(Debug, PartialEq)]
-pub struct NetworkComment {
+pub struct Comment {
     comment: Option<String>,
 }
 
-impl NetworkComment {
+impl Comment {
     pub fn new() -> Self {
         Self { comment: None }
     }
@@ -62,7 +62,7 @@ impl NetworkComment {
     // }
 }
 
-impl NetworkParser for NetworkComment {
+impl NetworkParser for Comment {
     /// Reads in as many whitespaces and comments as possible. This function
     /// can be used to identify as many "ignored" characters as possible.
     fn parse(input: &str) -> IResult<&str, Self> {
@@ -79,20 +79,20 @@ mod field_test {
 
     #[test]
     fn simple_whitespace() {
-        let (input, _) = NetworkComment::parse("  ").unwrap();
+        let (input, _) = Comment::parse("  ").unwrap();
         assert_eq!(input, "");
     }
 
     #[test]
     fn simple_newline() {
-        let (input, _) = NetworkComment::parse(" \n ").unwrap();
+        let (input, _) = Comment::parse(" \n ").unwrap();
         assert_eq!(input, "");
     }
 
     #[ignore = "comments are not supported."]
     #[test]
     fn simple_comment() {
-        let (input, network_comment) = NetworkComment::parse(" /* This is a comment. */ ").unwrap();
+        let (input, network_comment) = Comment::parse(" /* This is a comment. */ ").unwrap();
         assert_eq!(input, "");
         assert!(network_comment
             .comment

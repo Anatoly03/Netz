@@ -1,24 +1,24 @@
 use super::{
-    comment::NetworkComment,
+    comment::Comment,
     general::{expect_space, trim},
     identifier::NetworkIdentifier,
     interface::NetworkParser,
 };
 use nom::{bytes::complete::tag, multi::many0_count, IResult};
 
-/// A network field is an entry in a structure. It contains
+/// A struct field is an entry in a structure. It contains
 /// the type and field identifier, and the dimension of the
 /// array, 0 if none.
 #[derive(Debug, PartialEq)]
-pub struct NetworkField {
+pub struct StructField {
     field_type: String,
     field_name: String,
     array_dimension: usize,
 }
 
-impl NetworkField {
+impl StructField {
     pub fn new(field_type: String, field_name: String) -> Self {
-        NetworkField {
+        StructField {
             field_type,
             field_name,
             array_dimension: 0,
@@ -34,21 +34,21 @@ impl NetworkField {
     }
 }
 
-impl NetworkParser for NetworkField {
-    fn parse(input: &str) -> IResult<&str, NetworkField> {
+impl NetworkParser for StructField {
+    fn parse(input: &str) -> IResult<&str, StructField> {
         // read the field type
         let (input, field_type) = NetworkIdentifier::parse(input)?;
 
         //
-        let (input, _) = NetworkComment::parse(input)?;
+        let (input, _) = Comment::parse(input)?;
         let (input, array_dimension) = many0_count(tag("[]"))(input)?;
 
         // read the field name
         let (input, field_name) = NetworkIdentifier::parse(input)?;
-        let (input, _) = NetworkComment::parse(input)?;
+        let (input, _) = Comment::parse(input)?;
         let (input, _) = tag(";")(input)?;
 
-        IResult::Ok((input, NetworkField {
+        IResult::Ok((input, StructField {
             field_type: field_type.identity,
             field_name: field_name.identity,
             array_dimension,
@@ -62,7 +62,7 @@ mod field_test {
 
     #[test]
     fn simple_field() {
-        let (_, field) = NetworkField::parse("Field field;").unwrap();
+        let (_, field) = StructField::parse("Field field;").unwrap();
         assert_eq!(field.field_type, "Field");
         assert_eq!(field.field_name, "field");
         assert_eq!(field.array_dimension, 0);
@@ -70,7 +70,7 @@ mod field_test {
 
     #[test]
     fn many_spaces() {
-        let (_, field) = NetworkField::parse("   string   name   ;   ").unwrap();
+        let (_, field) = StructField::parse("   string   name   ;   ").unwrap();
         assert_eq!(field.field_type, "string");
         assert_eq!(field.field_name, "name");
     }
@@ -78,14 +78,14 @@ mod field_test {
     #[ignore = "comments are not supported."]
     #[test]
     fn documented_field() {
-        let (_, field) = NetworkField::parse("/* Good documentation. */ Field field;").unwrap();
+        let (_, field) = StructField::parse("/* Good documentation. */ Field field;").unwrap();
         assert_eq!(field.field_type, "Field");
         assert_eq!(field.field_name, "field");
     }
 
     #[test]
     fn field_array() {
-        let (_, field) = NetworkField::parse("string[] name;").unwrap();
+        let (_, field) = StructField::parse("string[] name;").unwrap();
         assert_eq!(field.field_type, "string");
         assert_eq!(field.field_name, "name");
         assert_eq!(field.array_dimension, 1);
@@ -93,7 +93,7 @@ mod field_test {
 
     #[test]
     fn field_array_two_dimensional() {
-        let (_, field) = NetworkField::parse("string[][] name;").unwrap();
+        let (_, field) = StructField::parse("string[][] name;").unwrap();
         assert_eq!(field.field_type, "string");
         assert_eq!(field.field_name, "name");
         assert_eq!(field.array_dimension, 2);
