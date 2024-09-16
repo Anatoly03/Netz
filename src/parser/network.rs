@@ -96,6 +96,17 @@ mod network_test {
         assert_eq!(network_struct.structure("Struct").unwrap().fields().next().unwrap().name(), "id");
     }
 
+    /// A file defining several structures should not return in an error.
+    #[test]
+    fn two_structs() {
+        let (input, network_struct) =
+            NetworkFileReader::parse("\nstruct Abc {\n\tu8 abc;\n}\n\nstruct Def {\n\tu16 def;\n}\n").unwrap();
+        assert_eq!(input, "");
+        assert_eq!(network_struct.structure("NonExistingStructure"), None);
+        assert!(network_struct.structure("Abc").is_some());
+        assert!(network_struct.structure("Def").is_some());
+    }
+
     /// The empty file should not return in an error.
     #[test]
     fn empty_file() {
