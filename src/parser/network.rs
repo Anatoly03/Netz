@@ -5,12 +5,6 @@ pub struct NetworkFileReader {
     primitive_types: Vec<String>,
 }
 
-/// The primitive types that the network file accepts per default.
-/// This includes integers, a boolean and string value.
-static PRIMITIVE_TYPES: &'static [&'static str] = &[
-    "u8", "i8", "u16", "i16", "u32", "i32", "u64", "i64", "bool", "string",
-];
-
 /// Parse a structure definition.
 ///
 /// #### Example
