@@ -28,22 +28,21 @@ impl NetworkParser for NetworkStruct {
 
         // expect structure name
         let (input, struct_name) = NetworkIdentifier::parse(input)?;
-        let mut network_struct = NetworkStruct::new(struct_name.identity.to_owned());
 
         // expect '{' symbol
         let (input, _) = NetworkComment::parse(input)?;
         let (input, _) = tag("{")(input)?;
 
         // expect field declarations
-        // let (input, fields) = many0(|input| NetworkField::parse(input))?;
-
-        // while let (input, Some(field)) = opt(NetworkField)(input)? {
-        //     let (input, _) = trim(input)?;
-        // };
+        let (input, fields) = many0(NetworkField::parse)(input)?;
 
         let (input, _) = NetworkComment::parse(input)?;
         let (input, _) = tag("}")(input)?;
-        Ok((input, network_struct))
+
+        Ok((input, Self {
+            identity: struct_name.identity,
+            fields
+        }))
     }
 }
 
@@ -60,12 +59,15 @@ mod struct_test {
     }
 
     /// Tests a simple structure with two declared fields of types
-    /// `Foo` and `Bar`
+    /// `Foo` and `Bar` with the respective field names `foo` and `bar`
     #[test]
-    #[ignore = "structs do not support fields"]
     fn foobar_struct() {
         let (input, network_struct) = NetworkStruct::parse("struct FooBar { Foo foo; Bar bar; }").unwrap();
         assert_eq!(network_struct.identity, "FooBar");
         assert_eq!(network_struct.fields.len(), 2);
+        assert_eq!(network_struct.fields.first().unwrap().name(), "foo");
+        assert_eq!(network_struct.fields.first().unwrap().field_type(), "Foo");
+        assert_eq!(network_struct.fields.get(1).unwrap().name(), "bar");
+        assert_eq!(network_struct.fields.get(1).unwrap().field_type(), "Bar");
     }
 }

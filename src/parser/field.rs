@@ -20,6 +20,14 @@ impl NetworkField {
             field_name,
         }
     }
+
+    pub fn name(&self) -> &str {
+        self.field_name.as_str()
+    }
+
+    pub fn field_type(&self) -> &str {
+        self.field_type.as_str()
+    }
 }
 
 impl NetworkParser for NetworkField {
