@@ -4,7 +4,6 @@ pub mod general;
 pub mod identifier;
 pub mod interface;
 // pub mod network;
-// pub mod reader;
 pub mod structure;
 
 /// The primitive types that the network file accepts per default.
