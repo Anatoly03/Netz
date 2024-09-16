@@ -66,6 +66,13 @@ mod struct_test {
         assert_eq!(network_struct.identity, "Struct");
     }
 
+    /// Tests a simple structure without declared fields.
+    #[test]
+    fn nameless_struct() {
+        let result = NetworkStruct::parse("struct {}");
+        assert!(result.is_err());
+    }
+
     /// Tests a simple structure with two declared fields of types
     /// `Foo` and `Bar` with the respective field names `foo` and `bar`
     #[test]
@@ -79,6 +86,18 @@ mod struct_test {
         assert_eq!(network_struct.fields.first().unwrap().field_type(), "Foo");
         assert_eq!(network_struct.fields.get(1).unwrap().name(), "bar");
         assert_eq!(network_struct.fields.get(1).unwrap().field_type(), "Bar");
+    }
+
+    /// Tests a simple structure with two declared fields of types
+    /// `Foo` and `Bar` with the respective field names `foo` and `bar`
+    #[test]
+    fn typed_struct() {
+        let (input, network_struct) =
+            NetworkStruct::parse("\nstruct Simple {\n\tu8 byte;\n\tu16 value;\n\tu8 next;\n}").unwrap();
+        assert_eq!(input, "");
+        assert_eq!(network_struct.identity, "Simple");
+        assert_eq!(network_struct.fields.len(), 3);
+        
     }
 
     /// Tests a more complex structure with two annotated tags

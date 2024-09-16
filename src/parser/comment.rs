@@ -82,4 +82,11 @@ mod field_test {
             .unwrap()
             .contains("This is a comment."));
     }
+
+    #[ignore = "comments are not supported."]
+    #[test]
+    fn invalid_comment() {
+        let result = Comment::parse("\n/* Multiline comment was not finished.\n");
+        assert!(result.is_err());
+    }
 }
