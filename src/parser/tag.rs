@@ -19,12 +19,14 @@ impl Tag {
         }
     }
 
-    // pub fn name(&self) -> &str {
-    //     &self.tag_name.as_str()
-    // }
+    pub fn name(&self) -> &str {
+        &self.tag_name.as_str()
+    }
 }
 
 impl NetworkParser for Tag {
+    /// A tag consists of two required elements, the '@' symbol and
+    /// a custom identifier afterwards.
     fn parse(input: &str) -> IResult<&str, Self> {
         // expect the '@' tag annotation
         let (input, _) = Comment::parse(input)?;

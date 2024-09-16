@@ -64,6 +64,7 @@ mod struct_test {
     fn foobar_struct() {
         let (input, network_struct) =
             NetworkStruct::parse("struct FooBar { Foo foo; Bar bar; }").unwrap();
+        assert_eq!(input, "");
         assert_eq!(network_struct.identity, "FooBar");
         assert_eq!(network_struct.fields.len(), 2);
         assert_eq!(network_struct.fields.first().unwrap().name(), "foo");
