@@ -4,13 +4,16 @@ use super::{
     identifier::NetworkIdentifier,
     interface::NetworkParser,
 };
-use nom::{bytes::complete::tag, IResult};
+use nom::{bytes::complete::tag, multi::many0_count, IResult};
 
-/// A network field is an entry
+/// A network field is an entry in a structure. It contains
+/// the type and field identifier, and the dimension of the
+/// array, 0 if none.
 #[derive(Debug, PartialEq)]
 pub struct NetworkField {
     field_type: String,
     field_name: String,
+    array_dimension: usize,
 }
 
 impl NetworkField {
@@ -18,6 +21,7 @@ impl NetworkField {
         NetworkField {
             field_type,
             field_name,
+            array_dimension: 0,
         }
     }
 
@@ -32,11 +36,23 @@ impl NetworkField {
 
 impl NetworkParser for NetworkField {
     fn parse(input: &str) -> IResult<&str, NetworkField> {
+        // read the field type
         let (input, field_type) = NetworkIdentifier::parse(input)?;
+
+        //
+        let (input, _) = NetworkComment::parse(input)?;
+        let (input, array_dimension) = many0_count(tag("[]"))(input)?;
+
+        // read the field name
         let (input, field_name) = NetworkIdentifier::parse(input)?;
         let (input, _) = NetworkComment::parse(input)?;
         let (input, _) = tag(";")(input)?;
-        IResult::Ok((input, Self::new(field_type.identity, field_name.identity)))
+
+        IResult::Ok((input, NetworkField {
+            field_type: field_type.identity,
+            field_name: field_name.identity,
+            array_dimension,
+        }))
     }
 }
 
@@ -49,6 +65,7 @@ mod field_test {
         let (_, field) = NetworkField::parse("Field field;").unwrap();
         assert_eq!(field.field_type, "Field");
         assert_eq!(field.field_name, "field");
+        assert_eq!(field.array_dimension, 0);
     }
 
     #[test]
@@ -64,5 +81,21 @@ mod field_test {
         let (_, field) = NetworkField::parse("/* Good documentation. */ Field field;").unwrap();
         assert_eq!(field.field_type, "Field");
         assert_eq!(field.field_name, "field");
+    }
+
+    #[test]
+    fn field_array() {
+        let (_, field) = NetworkField::parse("string[] name;").unwrap();
+        assert_eq!(field.field_type, "string");
+        assert_eq!(field.field_name, "name");
+        assert_eq!(field.array_dimension, 1);
+    }
+
+    #[test]
+    fn field_array_two_dimensional() {
+        let (_, field) = NetworkField::parse("string[][] name;").unwrap();
+        assert_eq!(field.field_type, "string");
+        assert_eq!(field.field_name, "name");
+        assert_eq!(field.array_dimension, 2);
     }
 }
