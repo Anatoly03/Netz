@@ -10,7 +10,7 @@ use nom::{
 /// A struct field is an entry in a structure. It contains
 /// the type and field identifier, and the dimension of the
 /// array, 0 if none.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct StructField {
     field_type: String,
     field_name: String,

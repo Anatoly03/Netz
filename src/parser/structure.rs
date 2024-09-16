@@ -1,14 +1,17 @@
+use std::array::IntoIter;
+
 use nom::{bytes::complete::tag, multi::many0, IResult};
 
 use super::{
-    comment::Comment, field::StructField, identifier::NetworkIdentifier, interface::NetworkParser, tag::Tag,
+    comment::Comment, field::StructField, identifier::NetworkIdentifier, interface::NetworkParser,
+    tag::Tag,
 };
 
 /// Definition for a `struct` in a network file. Such a structure
 /// starts with the keyword 'struct', followed by an identifier
 /// declaring the structures' name, followed by an array of fields
 /// inside curly brackets.
-/// 
+///
 /// #### Example
 ///
 /// ```net
@@ -17,21 +20,29 @@ use super::{
 ///     string[] bar;
 /// }
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct NetworkStruct {
     identity: String,
     fields: Vec<StructField>,
     tags: Vec<Tag>,
 }
 
-// impl NetworkStruct {
-//     pub fn new(identity: String) -> Self {
-//         Self {
-//             identity,
-//             fields: vec![],
-//         }
-//     }
-// }
+impl NetworkStruct {
+    // pub fn new(identity: String) -> Self {
+    //     Self {
+    //         identity,
+    //         fields: vec![],
+    //     }
+    // }
+
+    pub fn name(&self) -> &str {
+        &self.identity.as_str()
+    }
+
+    pub fn fields(&self) -> <Vec<StructField> as IntoIterator>::IntoIter {
+        self.fields.clone().into_iter()
+    }
+}
 
 impl NetworkParser for NetworkStruct {
     fn parse(input: &str) -> IResult<&str, Self> {
@@ -62,7 +73,7 @@ impl NetworkParser for NetworkStruct {
             Self {
                 identity: struct_name.identity,
                 fields,
-                tags
+                tags,
             },
         ))
     }
@@ -106,24 +117,35 @@ mod struct_test {
     #[test]
     fn typed_struct() {
         let (input, network_struct) =
-            NetworkStruct::parse("\nstruct Simple {\n\tu8 byte;\n\tu16 value;\n\tu8 next;\n}").unwrap();
+            NetworkStruct::parse("\nstruct Simple {\n\tu8 byte;\n\tu16 value;\n\tu8 next;\n}")
+                .unwrap();
         assert_eq!(input, "");
         assert_eq!(network_struct.identity, "Simple");
         assert_eq!(network_struct.fields.len(), 3);
-        
     }
 
     /// Tests a more complex structure with two annotated tags
     #[test]
     fn annotated_struct() {
         let (input, network_struct) =
-            NetworkStruct::parse("@special @annotation struct FooBar { @deprecated Foo foo; }").unwrap();
+            NetworkStruct::parse("@special @annotation struct FooBar { @deprecated Foo foo; }")
+                .unwrap();
         assert_eq!(input, "");
 
         assert_eq!(network_struct.fields.len(), 1);
         assert_eq!(network_struct.fields.first().unwrap().name(), "foo");
         assert_eq!(network_struct.fields.first().unwrap().field_type(), "Foo");
-        assert_eq!(network_struct.fields.first().unwrap().tags().next().unwrap().name(), "deprecated");
+        assert_eq!(
+            network_struct
+                .fields
+                .first()
+                .unwrap()
+                .tags()
+                .next()
+                .unwrap()
+                .name(),
+            "deprecated"
+        );
 
         assert_eq!(network_struct.tags.len(), 2);
         assert_eq!(network_struct.tags.first().unwrap().name(), "special");
