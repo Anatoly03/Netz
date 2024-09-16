@@ -89,7 +89,7 @@ mod field_test {
         assert_eq!(input, "");
     }
 
-    #[ignore = "Comments are currently not supported."]
+    #[ignore = "comments are not supported."]
     #[test]
     fn simple_comment() {
         let (input, network_comment) = NetworkComment::parse(" /* This is a comment. */ ").unwrap();

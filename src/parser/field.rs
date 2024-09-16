@@ -24,10 +24,7 @@ impl NetworkField {
 
 impl NetworkParser for NetworkField {
     fn parse(input: &str) -> IResult<&str, NetworkField> {
-        let (input, comment) = NetworkComment::parse(input)?;
         let (input, field_type) = NetworkIdentifier::parse(input)?;
-        // let (input, _) = expect_space(input)?;
-        let (input, _) = NetworkComment::parse(input)?;
         let (input, field_name) = NetworkIdentifier::parse(input)?;
         let (input, _) = NetworkComment::parse(input)?;
         let (input, _) = tag(";")(input)?;
@@ -53,7 +50,7 @@ mod field_test {
         assert_eq!(field.field_name, "name");
     }
 
-    #[ignore = "Comments are currently not supported."]
+    #[ignore = "comments are not supported."]
     #[test]
     fn documented_field() {
         let (_, field) = NetworkField::parse("/* Good documentation. */ Field field;").unwrap();
