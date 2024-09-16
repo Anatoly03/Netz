@@ -44,19 +44,23 @@ impl NetworkParser for NetworkIdentifier {
 
 #[cfg(test)]
 mod identifier_test {
-    // use super::*;
+    use super::*;
 
     #[test]
-    fn simple_field() {
-        let (_, field) = NetworkIdentifier::parse("FieldType simple;").unwrap();
-        assert_eq!(field.field_type, "FieldType");
-        assert_eq!(field.identifier, "simple");
+    fn simple_identifier() {
+        let (_, field) = NetworkIdentifier::parse("Identifier").unwrap();
+        assert_eq!(field.identity, "Identifier");
     }
 
     #[test]
-    fn many_spaces() {
-        let (_, field) = NetworkIdentifier::parse("   string   name   ;   ").unwrap();
-        assert_eq!(field.field_type, "string");
-        assert_eq!(field.identifier, "name");
+    fn invalid_identifier() {
+        let output = NetworkIdentifier::parse("012variable");
+        assert!(output.is_err());
+    }
+
+    #[test]
+    fn invalid_character() {
+        let output = NetworkIdentifier::parse("Idäntitßi");
+        assert!(output.is_err());
     }
 }
