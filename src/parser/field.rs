@@ -1,9 +1,11 @@
-use super::{
-    comment::Comment,
-    identifier::NetworkIdentifier,
-    interface::NetworkParser, tag::Tag,
+use std::slice::Iter;
+
+use super::{comment::Comment, identifier::NetworkIdentifier, interface::NetworkParser, tag::Tag};
+use nom::{
+    bytes::complete::tag,
+    multi::{many0, many0_count},
+    IResult,
 };
-use nom::{bytes::complete::tag, multi::{many0, many0_count}, IResult};
 
 /// A struct field is an entry in a structure. It contains
 /// the type and field identifier, and the dimension of the
@@ -32,12 +34,16 @@ impl StructField {
     pub fn field_type(&self) -> &str {
         &self.field_type.as_str()
     }
+
+    pub fn tags(&self) -> Iter<'_, Tag> {
+        self.tags.iter()
+    }
 }
 
 impl NetworkParser for StructField {
     fn parse(input: &str) -> IResult<&str, Self> {
         // read optionally several tags
-        let (input, tags) = many0(Tag::parse)(input)?;;
+        let (input, tags) = many0(Tag::parse)(input)?;
 
         // read the field type
         let (input, field_type) = NetworkIdentifier::parse(input)?;
@@ -51,12 +57,15 @@ impl NetworkParser for StructField {
         let (input, _) = Comment::parse(input)?;
         let (input, _) = tag(";")(input)?;
 
-        IResult::Ok((input, StructField {
-            field_type: field_type.identity,
-            field_name: field_name.identity,
-            array_dimension,
-            tags,
-        }))
+        IResult::Ok((
+            input,
+            StructField {
+                field_type: field_type.identity,
+                field_name: field_name.identity,
+                array_dimension,
+                tags,
+            },
+        ))
     }
 }
 

@@ -1,13 +1,14 @@
 use nom::{bytes::complete::tag, multi::many0, IResult};
 
 use super::{
-    comment::Comment, field::StructField, identifier::NetworkIdentifier, interface::NetworkParser,
+    comment::Comment, field::StructField, identifier::NetworkIdentifier, interface::NetworkParser, tag::Tag,
 };
 
 #[derive(Debug, PartialEq)]
 pub struct NetworkStruct {
     identity: String,
     fields: Vec<StructField>,
+    tags: Vec<Tag>,
 }
 
 // impl NetworkStruct {
@@ -22,6 +23,12 @@ pub struct NetworkStruct {
 impl NetworkParser for NetworkStruct {
     fn parse(input: &str) -> IResult<&str, Self> {
         let (input, _comment) = Comment::parse(input)?;
+
+        // read optionally several tags
+        let (input, tags) = many0(Tag::parse)(input)?;
+
+        // read the 'struct' keyword
+        let (input, _) = Comment::parse(input)?;
         let (input, _) = tag("struct")(input)?;
 
         // expect structure name
@@ -42,6 +49,7 @@ impl NetworkParser for NetworkStruct {
             Self {
                 identity: struct_name.identity,
                 fields,
+                tags
             },
         ))
     }
@@ -71,5 +79,21 @@ mod struct_test {
         assert_eq!(network_struct.fields.first().unwrap().field_type(), "Foo");
         assert_eq!(network_struct.fields.get(1).unwrap().name(), "bar");
         assert_eq!(network_struct.fields.get(1).unwrap().field_type(), "Bar");
+    }
+
+    /// Tests a more complex structure with two annotated tags
+    #[test]
+    fn annotated_struct() {
+        let (input, network_struct) =
+            NetworkStruct::parse("@special @annotation struct FooBar { @deprecated Foo foo; }").unwrap();
+        assert_eq!(input, "");
+
+        assert_eq!(network_struct.fields.len(), 1);
+        assert_eq!(network_struct.fields.first().unwrap().name(), "foo");
+        assert_eq!(network_struct.fields.first().unwrap().field_type(), "Foo");
+        assert_eq!(network_struct.fields.first().unwrap().tags().next().unwrap().name(), "deprecated");
+
+        assert_eq!(network_struct.tags.len(), 2);
+        assert_eq!(network_struct.tags.first().unwrap().name(), "special");
     }
 }
