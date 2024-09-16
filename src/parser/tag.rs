@@ -1,10 +1,9 @@
 use super::{
     comment::Comment,
-    general::{expect_space, trim},
     identifier::NetworkIdentifier,
     interface::NetworkParser,
 };
-use nom::{bytes::complete::tag, multi::many0_count, IResult};
+use nom::{bytes::complete::tag, IResult};
 
 /// A tag is a marker that can extend a functionality of a
 /// network definition file.
@@ -14,15 +13,15 @@ pub struct Tag {
 }
 
 impl Tag {
-    pub fn new(tag_name: String, field_name: String) -> Self {
+    pub fn new(tag_name: String) -> Self {
         Self {
             tag_name,
         }
     }
 
-    pub fn name(&self) -> &str {
-        &self.tag_name.as_str()
-    }
+    // pub fn name(&self) -> &str {
+    //     &self.tag_name.as_str()
+    // }
 }
 
 impl NetworkParser for Tag {
@@ -34,9 +33,7 @@ impl NetworkParser for Tag {
         // read the tag name
         let (input, tag_name) = NetworkIdentifier::parse(input)?;
 
-        IResult::Ok((input, Tag {
-            tag_name: tag_name.identity,
-        }))
+        IResult::Ok((input, Tag::new(tag_name.identity)))
     }
 }
 

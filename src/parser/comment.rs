@@ -1,16 +1,13 @@
 use nom::{
     branch::alt,
-    bytes::complete::{is_not, tag, take_until, take_while},
+    bytes::complete::{is_not, tag, take_until},
     character::complete::multispace0,
-    combinator::{eof, fail},
-    error::{make_error, ErrorKind},
-    multi::many0,
+    combinator::eof,
     sequence::{delimited, pair},
     IResult,
 };
 
 use super::interface::NetworkParser;
-// use super::general::fail;
 
 /// A network comment is a comment
 #[derive(Debug, PartialEq)]
@@ -46,27 +43,13 @@ impl Comment {
     pub fn c_multiline_comment(i: &str) -> IResult<&str, &str> {
         delimited(tag("/*"), take_until("*/"), tag("*/"))(i)
     }
-
-    // /// Trim all currently leading whitespace, if any. Under the hood,
-    // /// it trims all characters that return positive to `char.is_whitespace()`
-    // fn trim(input: &str) -> IResult<&str, &str> {
-    //     take_while(|chr: char| chr.is_whitespace() || chr == '\n')(input)
-    // }
-
-    // /// Trim all currently leading whitespace, if any. Under the hood,
-    // /// it trims all characters that return positive to `char.is_whitespace()`
-    // fn read_comment(input: &str) -> IResult<&str, &str> {
-    //     TODO implement comments
-    //     fail("Not Implemented")
-    //     IResult::Err(make_error(input, ErrorKind::Fail))
-    // }
 }
 
 impl NetworkParser for Comment {
     /// Reads in as many whitespaces and comments as possible. This function
     /// can be used to identify as many "ignored" characters as possible.
     fn parse(input: &str) -> IResult<&str, Self> {
-        let (input, comment) = Self::whitespace(input)?;
+        let (input, _comment) = Self::whitespace(input)?;
         // let (input, comment) = many0(alt((Self::trim, Self::read_comment)))(input)?;
         // TODO implement comments
         Ok((input, Self::new()))

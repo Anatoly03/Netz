@@ -1,6 +1,5 @@
 use super::{
     comment::Comment,
-    general::{expect_space, trim},
     identifier::NetworkIdentifier,
     interface::NetworkParser,
 };
@@ -16,26 +15,26 @@ pub struct StructField {
     array_dimension: usize,
 }
 
-impl StructField {
-    pub fn new(field_type: String, field_name: String) -> Self {
-        StructField {
-            field_type,
-            field_name,
-            array_dimension: 0,
-        }
-    }
+// impl StructField {
+//     pub fn new(field_type: String, field_name: String) -> Self {
+//         StructField {
+//             field_type,
+//             field_name,
+//             array_dimension: 0,
+//         }
+//     }
 
-    pub fn name(&self) -> &str {
-        self.field_name.as_str()
-    }
+//     pub fn name(&self) -> &str {
+//         self.field_name.as_str()
+//     }
 
-    pub fn field_type(&self) -> &str {
-        self.field_type.as_str()
-    }
-}
+//     pub fn field_type(&self) -> &str {
+//         self.field_type.as_str()
+//     }
+// }
 
 impl NetworkParser for StructField {
-    fn parse(input: &str) -> IResult<&str, StructField> {
+    fn parse(input: &str) -> IResult<&str, Self> {
         // read the field type
         let (input, field_type) = NetworkIdentifier::parse(input)?;
 

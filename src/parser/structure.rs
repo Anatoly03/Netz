@@ -1,9 +1,7 @@
-use nom::{
-    bytes::complete::{tag, take, take_while, take_while_m_n}, error::{Error, ErrorKind}, multi::many0, Err, IResult
-};
+use nom::{bytes::complete::tag, multi::many0, IResult};
 
 use super::{
-    comment::Comment, field::StructField, general::{expect_space, trim}, identifier::NetworkIdentifier, interface::NetworkParser
+    comment::Comment, field::StructField, identifier::NetworkIdentifier, interface::NetworkParser,
 };
 
 #[derive(Debug, PartialEq)]
@@ -12,18 +10,18 @@ pub struct NetworkStruct {
     fields: Vec<StructField>,
 }
 
-impl NetworkStruct {
-    pub fn new(identity: String) -> Self {
-        NetworkStruct {
-            identity,
-            fields: vec![],
-        }
-    }
-}
+// impl NetworkStruct {
+//     pub fn new(identity: String) -> Self {
+//         Self {
+//             identity,
+//             fields: vec![],
+//         }
+//     }
+// }
 
 impl NetworkParser for NetworkStruct {
-    fn parse(input: &str) -> IResult<&str, NetworkStruct> {
-        let (input, comment) = Comment::parse(input)?;
+    fn parse(input: &str) -> IResult<&str, Self> {
+        let (input, _comment) = Comment::parse(input)?;
         let (input, _) = tag("struct")(input)?;
 
         // expect structure name
@@ -39,13 +37,15 @@ impl NetworkParser for NetworkStruct {
         let (input, _) = Comment::parse(input)?;
         let (input, _) = tag("}")(input)?;
 
-        Ok((input, Self {
-            identity: struct_name.identity,
-            fields
-        }))
+        Ok((
+            input,
+            Self {
+                identity: struct_name.identity,
+                fields,
+            },
+        ))
     }
 }
-
 
 #[cfg(test)]
 mod struct_test {
@@ -62,7 +62,8 @@ mod struct_test {
     /// `Foo` and `Bar` with the respective field names `foo` and `bar`
     #[test]
     fn foobar_struct() {
-        let (input, network_struct) = NetworkStruct::parse("struct FooBar { Foo foo; Bar bar; }").unwrap();
+        let (input, network_struct) =
+            NetworkStruct::parse("struct FooBar { Foo foo; Bar bar; }").unwrap();
         assert_eq!(network_struct.identity, "FooBar");
         assert_eq!(network_struct.fields.len(), 2);
         assert_eq!(network_struct.fields.first().unwrap().name(), "foo");
