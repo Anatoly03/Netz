@@ -4,6 +4,19 @@ use super::{
     comment::Comment, field::StructField, identifier::NetworkIdentifier, interface::NetworkParser, tag::Tag,
 };
 
+/// Definition for a `struct` in a network file. Such a structure
+/// starts with the keyword 'struct', followed by an identifier
+/// declaring the structures' name, followed by an array of fields
+/// inside curly brackets.
+/// 
+/// #### Example
+///
+/// ```net
+/// struct FooBar {
+///     u8 foo;
+///     string[] bar;
+/// }
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct NetworkStruct {
     identity: String,
