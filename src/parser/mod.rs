@@ -15,5 +15,5 @@ static PRIMITIVE_TYPES: &'static [&'static str] = &[
 // /// The reserved identifiers are custom keywords that cannot be
 // /// chosen for field, type and name identifiers. 
 // static RESERVED_IDENTIFIERS: &'static [&'static str] = &[
-//     "struct", "enum", "service", "message", "union", "const", "option",
+//     "struct", "enum", "service", "message", "union", "const",
 // ];

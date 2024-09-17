@@ -8,6 +8,12 @@ use nom::{
     IResult,
 };
 
+///
+/// #### Example
+///
+/// ```net
+/// Identifier label Text123 Hello_World
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct NetworkIdentifier {
     pub identity: String,

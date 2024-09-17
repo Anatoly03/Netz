@@ -7,6 +7,12 @@ use nom::{bytes::complete::tag, IResult};
 
 /// A tag is a marker that can extend a functionality of a
 /// network definition file.
+///
+/// #### Example
+///
+/// ```net
+/// @ExampleTag
+/// ```
 #[derive(Debug, PartialEq, Clone)]
 pub struct Tag {
     tag_name: String,
