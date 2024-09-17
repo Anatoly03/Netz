@@ -124,7 +124,6 @@ mod network_test {
     /// A structure with a comment should have the message as a part
     /// of the documentation.
     #[test]
-    #[ignore = "comments are not supported."]
     fn commented_struct() {
         let (input, network_struct) =
             NetworkFileReader::parse("/// This is a very simple structure.\nstruct Struct {}\n")

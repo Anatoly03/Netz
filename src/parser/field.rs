@@ -95,7 +95,6 @@ mod field_test {
         assert_eq!(field.field_name, "name");
     }
 
-    #[ignore = "comments are not supported."]
     #[test]
     fn documented_field() {
         let (_, field) = StructField::parse("/* Good documentation. */ Field field;").unwrap();
