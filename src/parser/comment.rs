@@ -170,8 +170,7 @@ mod individual_comment_methods_test {
     /// to be used.
     #[test]
     fn empty_string() {
-        let result = Comment::whitespace("");
-        assert!(result.is_err());
+        assert!(Comment::whitespace("").is_err());
     }
 
     #[test]
@@ -224,6 +223,11 @@ mod comment_test {
     }
 
     #[test]
+    fn empty_string_parse1() {
+        assert!(Comment::parse1("").is_err());
+    }
+
+    #[test]
     fn simple_whitespace() {
         let (input, _) = Comment::parse(" \t\r\n").unwrap();
         assert_eq!(input, "");
@@ -245,8 +249,7 @@ mod comment_test {
     #[test]
     #[ignore = "ignored, invalid test: returned output does not result in error, but does not finish reading till the end."]
     fn invalid_comment() {
-        let result = Comment::parse("\n/* Multiline comment was not finished.\n");
-        assert!(result.is_err());
+        assert!(Comment::parse("\n/* Multiline comment was not finished.\n").is_err());
     }
 
     #[test]
