@@ -1,6 +1,6 @@
 use super::{comment::Comment, interface::NetworkParser};
 use nom::{
-    bytes::complete::take_while_m_n,
+    bytes::complete::{is_a, take_while_m_n},
     character::complete::alphanumeric1,
     combinator::recognize,
     multi::many0_count,
@@ -36,7 +36,7 @@ impl NetworkParser for NetworkIdentifier {
         let (input, _comment) = Comment::parse(input)?;
 
         let (input, identity) = recognize(pair(
-            take_while_m_n(1, 1, |c: char| c.is_ascii_alphabetic()),
+            is_a("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"),
             many0_count(alphanumeric1),
         ))(input)?;
 

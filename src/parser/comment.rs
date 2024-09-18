@@ -2,8 +2,8 @@ use nom::{
     branch::alt,
     bytes::complete::{is_not, tag, take_until},
     character::complete::multispace0,
-    combinator::eof,
-    multi::many0,
+    combinator::{eof, opt},
+    multi::{many0, many_m_n},
     sequence::{delimited, pair},
     IResult,
 };
@@ -48,7 +48,7 @@ impl Comment {
     ///
     /// https://github.com/rust-bakery/nom/blob/main/doc/nom_recipes.md#whitespace
     fn whitespace(i: &str) -> IResult<&str, Comment> {
-        let (input, _) = alt((multispace0, eof))(i)?;
+        let (input, _) = multispace0(i)?;
         IResult::Ok((input, Self::Whitespace))
     }
 
@@ -94,14 +94,37 @@ impl NetworkParser for Comment {
     /// can be used to identify as many "ignored" characters as possible, as
     /// this will also parse through comments and read the documentation from
     /// it.
-    fn parse(input: &str) -> IResult<&str, Self> {
-        let (input, mut comments) = many0(alt((
-            Self::whitespace,
-            Self::c_comment_docs,
-            Self::c_comment,
-            Self::c_multiline_comment,
-        )))(input)?;
+    fn parse(mut input: &str) -> IResult<&str, Self> {
+        let mut comments = Vec::new();
+        // let (mut input, mut comments) =
 
+        loop {
+            let (tmp_input, comm) = opt(alt((
+                Self::whitespace,
+                Self::c_comment_docs,
+                Self::c_comment,
+                Self::c_multiline_comment,
+            )))(input)?;
+
+            // To avoid running into an infinite loop, if we did not
+            // advance, break, if continuing, update the input variable.
+            if input == tmp_input {
+                break;
+            }
+
+            input = tmp_input;
+            
+            if let Some(value) = comm {
+                comments.push(value);
+                continue;
+            }
+
+            break;
+        };
+        
+        // many0()(input)?;
+
+        // let mut comments = Vec::new();
         let mut single_line_docs = None;
 
         while let Some(comment) = comments.pop() {
@@ -135,13 +158,56 @@ impl NetworkParser for Comment {
     }
 }
 
+
 #[cfg(test)]
-mod field_test {
+
+mod individual_comment_methods_test {
+    use std::string::ParseError;
+
     use super::*;
 
     #[test]
+    fn empty_string() {
+        let (input, comm) = Comment::whitespace("").unwrap();
+        assert_eq!(input, "");
+        assert_eq!(comm, Comment::Whitespace);
+    }
+
+    #[test]
     fn simple_whitespace() {
-        let (input, _) = Comment::parse("  ").unwrap();
+        let (input, comm) = Comment::whitespace(" \t \r \n").unwrap();
+        assert_eq!(input, "");
+        assert_eq!(comm, Comment::Whitespace);
+    }
+
+    // #[test]
+    // fn simple_whitespace_many() {
+    //     let (input, comm) = many0(Comment::whitespace)(" \t\r\n").unwrap();
+    //     assert_eq!(input, "");
+    //     assert_eq!(comm.len(), 1); // Whitespace should consume the entire string and die.
+    // }
+
+    // #[test]
+    // fn eof_lab() {
+    //     let (input, comm) = eof("").unwrap();
+    //     assert_eq!(input, "");
+    //     assert_eq!(comm.len(), 1); // Whitespace should consume the entire string and die.
+    // }
+}
+
+#[cfg(test)]
+mod comment_test {
+    use super::*;
+
+    #[test]
+    fn empty_string() {
+        let (input, _) = Comment::parse("").unwrap();
+        assert_eq!(input, "");
+    }
+
+    #[test]
+    fn simple_whitespace() {
+        let (input, _) = Comment::parse(" \t\r\n").unwrap();
         assert_eq!(input, "");
     }
 
