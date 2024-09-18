@@ -3,17 +3,41 @@
 	"name": "Template",
 	"patterns": [
 		{
+			"include": "#symbols"
+		},
+		{
 			"include": "#keywords"
 		},
 		{
+			"include": "#stdlib"
+		},
+		{
 			"include": "#strings"
+		},
+        {
+			"include": "#comments"
+		},
+		{
+			"include": "#variables"
 		}
 	],
 	"repository": {
-		"keywords": {
+		"symbols": {
 			"patterns": [{
 				"name": "keyword.control.tmpl",
-				"match": "\\b(requires|if|else|foreach)\\b"
+				"match": "\\b(requires|if|then|else|foreach)\\b"
+			}]
+		},
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.operator",
+				"match": ":"
+			}]
+		},
+        "stdlib": {
+			"patterns": [{
+				"name": "support.function",
+				"match": "\\b(indent|outdent|require_newline)\\b"
 			}]
 		},
 		"strings": {
@@ -26,6 +50,23 @@
 					"match": "\\\\."
 				}
 			]
+		},
+		"comments": {
+			"patterns": [{
+                "name": "comment.block.documentation",
+                "begin": "/\\*",
+                "end": "*/"
+			}, {
+                "name": "comment.line.double-slash",
+                "begin": "//",
+                "end": "\n"
+			}]
+		},
+        "variables": {
+			"patterns": [{
+				"name": "variable.name",
+				"match": "\\b[a-zA-Z_][a-zA-Z0-9_]*(\\.[a-zA-Z_][a-zA-Z0-9_]*)*\\b"
+			}]
 		}
 	},
 	"scopeName": "source.tmpl"
