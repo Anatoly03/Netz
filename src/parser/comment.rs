@@ -1,11 +1,11 @@
 use nom::{
     branch::alt,
-    bytes::complete::{is_not, tag, take_until},
-    character::complete::multispace0,
+    bytes::complete::{is_a, is_not, tag, take, take_until, take_while},
+    character::complete::{anychar, line_ending, multispace0},
     combinator::{eof, opt},
-    multi::{many0, many_m_n},
+    multi::{many0, many_m_n, many_till},
     sequence::{delimited, pair},
-    IResult,
+    AsChar, IResult, Parser,
 };
 
 use super::interface::NetworkParser;
@@ -59,9 +59,8 @@ impl Comment {
     ///
     /// https://github.com/rust-bakery/nom/blob/main/doc/nom_recipes.md#comments
     pub fn c_comment(i: &str) -> IResult<&str, Comment> {
-        let (input, comment) =
-            pair(tag("//"), is_not("\n\r"))(i).map(|(lines, (_, comment))| (lines, comment))?;
-        IResult::Ok((input, Self::Singleline(comment.to_owned())))
+        let (input, comm) = delimited(tag("//"), many0(anychar), alt((is_a("\n\r"), eof)))(i)?;
+        IResult::Ok((input, Self::Singleline(comm.into_iter().collect())))
     }
 
     /// A combinator that takes a tag parser from the C-style documentation comment
@@ -113,15 +112,15 @@ impl NetworkParser for Comment {
             }
 
             input = tmp_input;
-            
+
             if let Some(value) = comm {
                 comments.push(value);
                 continue;
             }
 
             break;
-        };
-        
+        }
+
         // many0()(input)?;
 
         // let mut comments = Vec::new();
@@ -158,7 +157,6 @@ impl NetworkParser for Comment {
     }
 }
 
-
 #[cfg(test)]
 
 mod individual_comment_methods_test {
@@ -180,19 +178,36 @@ mod individual_comment_methods_test {
         assert_eq!(comm, Comment::Whitespace);
     }
 
-    // #[test]
-    // fn simple_whitespace_many() {
-    //     let (input, comm) = many0(Comment::whitespace)(" \t\r\n").unwrap();
-    //     assert_eq!(input, "");
-    //     assert_eq!(comm.len(), 1); // Whitespace should consume the entire string and die.
-    // }
+    #[test]
+    fn empty_comment() {
+        let (input, comm) = Comment::c_comment("//\n").unwrap();
+        assert_eq!(input, "");
+    }
 
-    // #[test]
-    // fn eof_lab() {
-    //     let (input, comm) = eof("").unwrap();
-    //     assert_eq!(input, "");
-    //     assert_eq!(comm.len(), 1); // Whitespace should consume the entire string and die.
-    // }
+    #[test]
+    fn empty_comment_without_newline() {
+        let (input, comm) = Comment::c_comment("//").unwrap();
+        assert_eq!(input, "");
+    }
+
+    #[test]
+    fn simple_comment() {
+        let (input, comm) = Comment::c_comment("// Hello!\n").unwrap();
+        assert_eq!(input, "");
+    }
+
+    #[test]
+    fn empty_multiline_comment() {
+        let (input, comm) = Comment::c_multiline_comment("/**/").unwrap();
+        assert_eq!(input, "");
+    }
+
+    #[test]
+    fn simple_multiline_comment() {
+        let (input, comm) = Comment::c_multiline_comment("/*Hello!*/").unwrap();
+        assert_eq!(input, "");
+        assert_eq!(comm.read_comment().unwrap().as_str(), "Hello!");
+    }
 }
 
 #[cfg(test)]
