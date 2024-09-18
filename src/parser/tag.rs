@@ -54,4 +54,10 @@ mod tag_test {
         let (_, tag) = Tag::parse("@HelloWorld").unwrap();
         assert_eq!(tag.tag_name, "HelloWorld");
     }
+
+    #[test]
+    fn documented_tag() {
+        let (_, tag) = Tag::parse("/** A tag. */ @Doc").unwrap();
+        assert_eq!(tag.tag_name, "Doc");
+    }
 }
