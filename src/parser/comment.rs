@@ -1,7 +1,7 @@
 use nom::{
     branch::alt,
     bytes::complete::{is_a, is_not, tag, take, take_until, take_while},
-    character::complete::{anychar, line_ending, multispace0},
+    character::complete::{anychar, line_ending, multispace1},
     combinator::{eof, opt},
     multi::{many0, many_m_n, many_till},
     sequence::{delimited, pair},
@@ -48,7 +48,7 @@ impl Comment {
     ///
     /// https://github.com/rust-bakery/nom/blob/main/doc/nom_recipes.md#whitespace
     fn whitespace(i: &str) -> IResult<&str, Comment> {
-        let (input, _) = multispace0(i)?;
+        let (input, _) = multispace1(i)?;
         IResult::Ok((input, Self::Whitespace))
     }
 
@@ -70,9 +70,8 @@ impl Comment {
     ///
     /// https://github.com/rust-bakery/nom/blob/main/doc/nom_recipes.md#comments
     pub fn c_comment_docs(i: &str) -> IResult<&str, Comment> {
-        let (input, comment) =
-            pair(tag("///"), is_not("\n\r"))(i).map(|(lines, (_, comment))| (lines, comment))?;
-        IResult::Ok((input, Self::DocSingleline(comment.to_owned())))
+        let (input, comm) = delimited(tag("///"), many0(anychar), alt((is_a("\n\r"), eof)))(i)?;
+        IResult::Ok((input, Self::DocSingleline(comm.into_iter().collect())))
     }
 
     /// A combinator that takes a delimited parser and returns the comments'
@@ -83,8 +82,8 @@ impl Comment {
     ///
     /// https://github.com/rust-bakery/nom/blob/main/doc/nom_recipes.md#comments
     pub fn c_multiline_comment(i: &str) -> IResult<&str, Comment> {
-        let (input, comment) = delimited(tag("/*"), take_until("*/"), tag("*/"))(i)?;
-        IResult::Ok((input, Self::Multiline(comment.to_owned())))
+        let (input, comm) = delimited(tag("/*"), take_until("*/"), tag("*/"))(i)?;
+        IResult::Ok((input, Self::Multiline(comm.to_owned())))
     }
 }
 
@@ -164,11 +163,14 @@ mod individual_comment_methods_test {
 
     use super::*;
 
+    /// The function `Comment::whitespace` should not accept
+    /// the empty word. It is used from `Comment::parse` in
+    /// an `nom::branch::alt`, so it needs a strict whitespace
+    /// to be used.
     #[test]
     fn empty_string() {
-        let (input, comm) = Comment::whitespace("").unwrap();
-        assert_eq!(input, "");
-        assert_eq!(comm, Comment::Whitespace);
+        let result = Comment::whitespace("");
+        assert!(result.is_err());
     }
 
     #[test]
@@ -234,12 +236,9 @@ mod comment_test {
 
     #[test]
     fn simple_comment() {
-        let (input, network_comment) = Comment::parse(" /* This is a comment. */ ").unwrap();
+        let (input, network_comment) = Comment::parse("\n /* This is a comment. */ \n").unwrap();
         assert_eq!(input, "");
-        assert!(network_comment
-            .read_comment()
-            .unwrap()
-            .contains("This is a comment."));
+        assert_eq!(network_comment, Comment::Multiline("This is a comment.".to_owned()));
     }
 
     #[test]
