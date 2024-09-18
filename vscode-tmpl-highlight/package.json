@@ -1,0 +1,25 @@
+{
+  "name": "template-file-syntax-highlight",
+  "displayName": "Template File Syntax Highlight",
+  "description": "Provides syntax highlighting for template files.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "tmpl",
+      "aliases": ["Template", "tmpl"],
+      "extensions": [".tmpl",".template"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "tmpl",
+      "scopeName": "source.tmpl",
+      "path": "./syntaxes/tmpl.tmLanguage.json"
+    }]
+  }
+}

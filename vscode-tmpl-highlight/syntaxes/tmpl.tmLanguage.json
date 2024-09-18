@@ -1,0 +1,32 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Template",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.tmpl",
+				"match": "\\b(requires|if|else|foreach)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.tmpl",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.tmpl",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.tmpl"
+}
