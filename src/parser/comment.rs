@@ -83,7 +83,8 @@ impl Comment {
     /// https://github.com/rust-bakery/nom/blob/main/doc/nom_recipes.md#comments
     pub fn c_multiline_comment(i: &str) -> IResult<&str, Comment> {
         let (input, comm) = delimited(tag("/*"), take_until("*/"), tag("*/"))(i)?;
-        IResult::Ok((input, Self::Multiline(comm.to_owned())))
+        let comment = comm.lines().map(|l| l.trim()).collect();
+        IResult::Ok((input, Self::Multiline(comment)))
     }
 }
 
