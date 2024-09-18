@@ -1,0 +1,13 @@
+requires file_is_struct
+
+/// We begin TypeScript files conventionally with a newline
+"\n"
+
+/// A network 'struct' in TypeScript will simply be an interface.
+"export default interface " struct_name.upper_camel_case " " (if fields.none then "{}" else (
+    "{\n"
+    foreach field (
+        "\t" field.identifier.lower_camel_case ": " field.type.upper_camel_case ";\n"
+    )
+    "}"
+)) "\n"
