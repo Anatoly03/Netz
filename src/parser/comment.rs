@@ -248,4 +248,10 @@ mod comment_test {
         let result = Comment::parse("\n/* Multiline comment was not finished.\n");
         assert!(result.is_err());
     }
+
+    #[test]
+    fn many_comments() {
+        let (input, _) = Comment::parse("/***///Hello\n  \t\n// /*\n").unwrap();
+        assert_eq!(input, "");
+    }
 }
