@@ -1,13 +1,30 @@
 //! This module contains struct and enum definitions of various
 //! parsed components of a template file.
 
+use super::util;
+use nom::{
+    combinator::all_consuming, IResult, Parser
+};
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ForeachScope {
+    pub value: String,
+    pub variable: Vec<String>,
+    pub scope: Vec<TemplateElement>,
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub enum TemplateElement {
+    /// Any ignored template element like comments and whitespace that have
+    /// to return a template element type.
+    Ignored,
+
     /// An (environment) variable is a simple concatenation of identifiers
     /// with dots (e.g. `root.child.attribute`) and has two definition states:
     /// When undefined, it can be used with `requires` to reject a scope, and
     /// when defined, it will write the variables' string contents. All
     /// variables are of type string.
-    /// 
+    ///
     /// The variable enum will also hold any internal function, like `indent`,
     /// `outdent` and `require_newline`
     Variable(Vec<String>),
@@ -27,12 +44,12 @@ pub enum TemplateElement {
 
     /// Foreach is an iterative scanner over an environment variable and
     /// will continue writing until the end of the "array variable".
-    /// 
+    ///
     /// This is done by defining a macro variable `value` from an "array
     /// variable" `variable`. Iteration is done, while `variable.N`,
     /// starting with `variable.0` is defined. `value` is simply a macro
     /// for `variable.N`.
-    /// 
+    ///
     /// ```tmpl
     /// // root.0 = "1"
     /// // root.0.Hello = "A"
@@ -40,20 +57,22 @@ pub enum TemplateElement {
     /// // root.1.Hello = "B"
     /// // root.2 = "1"
     /// // root.2.Hello = "C"
-    /// 
+    ///
     /// foreach v : root {
     ///     v.Hello " "
     /// }
     /// ```
-    /// 
+    ///
     /// will produce the following text
-    /// 
+    ///
     /// ```txt
-    /// A B C 
+    /// A B C
     /// ```
-    Foreach {
-        value: String,
-        variable: Vec<String>,
-        scope: Vec<TemplateElement>,
+    Foreach(ForeachScope),
+}
+
+impl TemplateElement {
+    pub fn from_str<'a>(input: &'a str) -> IResult<&str, Vec<TemplateElement>> {
+        all_consuming(util::scope).parse(input)
     }
 }
