@@ -1,5 +1,8 @@
 requires file_is_struct
 
+file_name struct_name.lower_dash_case
+file_extension "ts"
+
 /// We begin TypeScript files conventionally with a newline
 "\n"
 
@@ -21,3 +24,6 @@ else (
     "}"
 )) "\n"
 // </STRUCT>
+
+/// We end TypeScript files conventionally with a newline
+require_newline

@@ -25,7 +25,7 @@
 		"symbols": {
 			"patterns": [{
 				"name": "keyword.control.tmpl",
-				"match": "\\b(requires|if|then|else|foreach)\\b"
+				"match": "\\b(requires|file_name|file_extension|if|then|else|foreach)\\b"
 			}]
 		},
 		"keywords": {
