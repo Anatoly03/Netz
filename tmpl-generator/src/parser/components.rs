@@ -2,9 +2,7 @@
 //! parsed components of a template file.
 
 use super::util;
-use nom::{
-    combinator::all_consuming, IResult, Parser
-};
+use nom::{combinator::all_consuming, IResult, Parser};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ForeachScope {
@@ -72,7 +70,22 @@ pub enum TemplateElement {
 }
 
 impl TemplateElement {
-    pub fn from_str<'a>(input: &'a str) -> IResult<&str, Vec<TemplateElement>> {
+    pub fn from_str(input: &str) -> Option<TemplateElement> {
+        let (input, v) = Self::scope_from_str.parse(input).ok()?;
+        Some(TemplateElement::Scope(v))
+    }
+
+    fn scope_from_str(input: &str) -> IResult<&str, Vec<TemplateElement>> {
         all_consuming(util::scope).parse(input)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn string_template() {
+        TemplateElement::from_str("").unwrap();
     }
 }
