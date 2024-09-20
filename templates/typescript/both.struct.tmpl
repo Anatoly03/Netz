@@ -1,29 +1,29 @@
-requires file_is_struct
+#requires file_is_struct
 
-file_name struct_name.lower_dash_case
-file_extension "ts"
+(#file_name struct_name.lower_dash_case)
+(#file_extension "ts")
 
 /// We begin TypeScript files conventionally with a newline
-"\n"
+#require_newline
 
-/// A network 'struct' in TypeScript is an interface.
-//
-// <STRUCT>
-"export default interface " struct_name.upper_camel_case " "
-(if fields.none then
-    "{}"
-else (
-    "{"
-    indent
-    foreach field : fields (
-        require_newline
-        field.identifier.lower_camel_case ": " field.type.upper_camel_case ";"
+///#region STRUCT
+/// A network 'struct' in TypeScript is an interface. This will only contain the
+/// type 
+"export default interface I" struct_name.upper_camel_case " "
+    (#requires (#not fields) "{}")
+    (#requires fields
+        "{"
+        #indent
+        #foreach field #of fields (
+            #require_newline
+            field.identifier.lower_camel_case ": " field.type.upper_camel_case ";"
+        )
+        #outdent
+        #require_newline
+        "}"
     )
-    outdent
-    require_newline
-    "}"
-)) "\n"
-// </STRUCT>
+#require_newline
+///#endregion
 
 /// We end TypeScript files conventionally with a newline
-require_newline
+#require_newline
