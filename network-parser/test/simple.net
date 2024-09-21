@@ -1,0 +1,10 @@
+
+// TODO add debugging tags and improve testing
+// TODO current tests only check for compilation
+
+struct FooBar {
+    small: u8;
+    medium: u16;
+    large: u32;
+}
+

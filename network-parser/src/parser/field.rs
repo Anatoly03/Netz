@@ -51,16 +51,21 @@ impl NetworkParser for StructField {
         // read optionally several tags
         let (input, tags) = many0(Tag::parse)(input)?;
 
+        // read the field name
+        let (input, field_name) = NetworkIdentifier::parse(input)?;
+
+        let (input, _) = Comment::parse(input)?;
+        let (input, _) = tag(":")(input)?;
+
         // read the field type
         let (input, field_type) = NetworkIdentifier::parse(input)?;
+        let (input, _) = Comment::parse(input)?;
 
-        //
+        // read the array dimension
         let (input, _) = Comment::parse(input)?;
         let (input, array_dimension) = many0_count(tag("[]"))(input)?;
 
-        // read the field name
-        let (input, field_name) = NetworkIdentifier::parse(input)?;
-        let (input, _) = Comment::parse(input)?;
+        // read the semicolon
         let (input, _) = tag(";")(input)?;
 
         IResult::Ok((
@@ -81,7 +86,7 @@ mod field_test {
 
     #[test]
     fn simple_field() {
-        let (_, field) = StructField::parse("Field field;").unwrap();
+        let (_, field) = StructField::parse("field: Field;").unwrap();
         assert_eq!(field.field_type, "Field");
         assert_eq!(field.field_name, "field");
         assert_eq!(field.array_dimension, 0);
@@ -90,21 +95,21 @@ mod field_test {
 
     #[test]
     fn many_spaces() {
-        let (_, field) = StructField::parse("   string   name   ;   ").unwrap();
+        let (_, field) = StructField::parse("   name   :   string   ;   ").unwrap();
         assert_eq!(field.field_type, "string");
         assert_eq!(field.field_name, "name");
     }
 
     #[test]
     fn documented_field() {
-        let (_, field) = StructField::parse("/* Good documentation. */ Field field;").unwrap();
+        let (_, field) = StructField::parse("/* Good documentation. */ field: Field;").unwrap();
         assert_eq!(field.field_type, "Field");
         assert_eq!(field.field_name, "field");
     }
 
     #[test]
     fn field_array() {
-        let (_, field) = StructField::parse("string[] name;").unwrap();
+        let (_, field) = StructField::parse("name: string[];").unwrap();
         assert_eq!(field.field_type, "string");
         assert_eq!(field.field_name, "name");
         assert_eq!(field.array_dimension, 1);
@@ -112,7 +117,7 @@ mod field_test {
 
     #[test]
     fn field_array_two_dimensional() {
-        let (_, field) = StructField::parse("string[][] name;").unwrap();
+        let (_, field) = StructField::parse("name: string[][];").unwrap();
         assert_eq!(field.field_type, "string");
         assert_eq!(field.field_name, "name");
         assert_eq!(field.array_dimension, 2);
@@ -120,7 +125,7 @@ mod field_test {
 
     #[test]
     fn deprecated_field() {
-        let (_, field) = StructField::parse("@deprecated A b;").unwrap();
+        let (_, field) = StructField::parse("@deprecated b: A;").unwrap();
         assert_eq!(field.field_type, "A");
         assert_eq!(field.field_name, "b");
         assert_eq!(field.tags.len(), 1);

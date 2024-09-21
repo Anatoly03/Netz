@@ -102,7 +102,7 @@ mod struct_test {
     #[test]
     fn foobar_struct() {
         let (input, network_struct) =
-            NetworkStruct::parse("struct FooBar { Foo foo; Bar bar; }").unwrap();
+            NetworkStruct::parse("struct FooBar { foo: Foo; bar: Bar; }").unwrap();
         assert_eq!(input, "");
         assert_eq!(network_struct.identity, "FooBar");
         assert_eq!(network_struct.fields.len(), 2);
@@ -117,7 +117,7 @@ mod struct_test {
     #[test]
     fn typed_struct() {
         let (input, network_struct) =
-            NetworkStruct::parse("\nstruct Simple {\n\tu8 byte;\n\tu16 value;\n\tu8 next;\n}")
+            NetworkStruct::parse("\nstruct Simple {\n\tbyte: u8;\n\tvalue: u16;\n\tnext: u8;\n}")
                 .unwrap();
         assert_eq!(input, "");
         assert_eq!(network_struct.identity, "Simple");
@@ -128,7 +128,7 @@ mod struct_test {
     #[test]
     fn annotated_struct() {
         let (input, network_struct) =
-            NetworkStruct::parse("@special @annotation struct FooBar { @deprecated Foo foo; }")
+            NetworkStruct::parse("@special @annotation struct FooBar { @deprecated foo: Foo; }")
                 .unwrap();
         assert_eq!(input, "");
 

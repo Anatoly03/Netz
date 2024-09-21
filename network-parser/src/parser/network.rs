@@ -88,7 +88,7 @@ mod network_test {
     #[test]
     fn simple_struct() {
         let (input, network_struct) =
-            NetworkFileReader::parse("\nstruct Struct {\n\tu8 id;\n}\n").unwrap();
+            NetworkFileReader::parse("\nstruct Struct {\n\tid: u8;\n}\n").unwrap();
         assert_eq!(input, "");
         assert_eq!(network_struct.structure("NonExistingStructure"), None);
         assert_eq!(network_struct.structure("Struct").unwrap().name(), "Struct");
@@ -100,7 +100,7 @@ mod network_test {
     #[test]
     fn two_structs() {
         let (input, network_struct) =
-            NetworkFileReader::parse("\nstruct Abc {\n\tu8 abc;\n}\n\nstruct Def {\n\tu16 def;\n}\n").unwrap();
+            NetworkFileReader::parse("\nstruct Abc {\n\tabc: u8;\n}\n\nstruct Def {\n\tdef: u16;\n}\n").unwrap();
         assert_eq!(input, "");
         assert_eq!(network_struct.structure("NonExistingStructure"), None);
         assert!(network_struct.structure("Abc").is_some());
