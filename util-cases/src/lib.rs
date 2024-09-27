@@ -71,6 +71,24 @@ impl<T: AsRef<str>> CaseStyles for T {
         for element in separation {
             let mut buffer = String::from("");
 
+            // The separation characters split the word by "obvious" splits, this
+            // will split any input in `dash-case` and `snake_case` into two words,
+            // but the individual word components have to be split again based on
+            // their case. The following needs to be considered:
+            // 
+            // - `Dashed-SnakeCase` equives `dashed-snake-case`
+            // - `HTTPRequest` equives `http-request`
+            // - `ECMAScript` equives `ecma-script`
+            // - `camelsLoveOCaml` equives `camels-love-o-caml`,
+            //   ambigious with semantic `..-ocaml`
+            // 
+            // From these observations, here are the rules of the algorithm
+            // ranked by priority:
+            // 1. All lower case letters following one lower case letter must be part
+            //    of the same word.
+            // 2. A capital letter following lower case letters belongs to the following
+            //    word.
+
             for (idx, c) in element.char_indices() {
                 const DEFAULT: char = '?';
 
@@ -80,8 +98,8 @@ impl<T: AsRef<str>> CaseStyles for T {
                 match c {
                     // If we're an uppercase letter and the next letter is lowercase, we start
                     // a new word from this letter.
-                    // This covers `...Aa`
-                    c if c.is_ascii_uppercase() && next_letter.is_ascii_lowercase() => {
+                    // This covers `...Aa` and `aA...`
+                    c if c.is_ascii_uppercase() && (previous_letter.is_ascii_lowercase() || next_letter.is_ascii_lowercase()) => {
                         vec.push(buffer);
                         buffer = c.to_string();
                     }
@@ -134,6 +152,14 @@ mod tests {
         assert_eq!(
             "__helloWorld".to_split_case(),
             vec!["hello".to_string(), "World".to_string()]
+        );
+        assert_eq!(
+            "AbcABC".to_split_case(),
+            vec!["Abc".to_string(), "ABC".to_string()]
+        );
+        assert_eq!(
+            "ABCAbc".to_split_case(),
+            vec!["ABC".to_string(), "Abc".to_string()]
         );
     }
 
