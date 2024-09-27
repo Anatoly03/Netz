@@ -6,6 +6,7 @@ use nom::{
 };
 use util_cases::CaseStyles;
 
+use crate::whitespace;
 use crate::combinator::whitespace::read_ignored;
 
 ///
@@ -46,12 +47,13 @@ impl<'a, E: nom::error::ParseError<&'a str>> Parser<&'a str, Self, E> for Identi
     }
 }
 
-// #[macro_export]
-// macro_rules! identifier {
-//     ($x:expr) => {
-//         let (input, $x) = Identifier::parse(input)?;
-//     };
-// }
+#[macro_export]
+macro_rules! identifier {
+    ($i:ident) => {
+        whitespace!($i);
+        let ($i, $x) = Identifier::parse($i)?;
+    };
+}
 
 #[cfg(test)]
 mod tests {
