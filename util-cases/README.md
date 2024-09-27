@@ -13,3 +13,9 @@ This crate implements a utility trait that converts any string to a particular c
 | Constant case | `HELLO_WORLD` | Lowercase join with underscore of split case.
 
 Specific sbbreviations may be converted unintuitively into the cases, like `OCaml` converting to `o-caml` and `OCaml` in dash and pascal case, but `Ocaml` converts to `ocaml`. In camel case, the first one converts to `oCaml`.
+
+### Open for Contribution
+
+- `HTTP-Header-Case`
+- `TRAIN-CASE`, `COBOL-CASE`
+- `_undercoreNotation` (underscore and camel case)
