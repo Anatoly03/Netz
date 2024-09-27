@@ -59,12 +59,56 @@ pub trait CaseStyles {
 impl<T: AsRef<str>> CaseStyles for T {
     fn to_split_case(&self) -> Vec<String> {
         let identifier = self.as_ref().to_string();
-        let mut vec = identifier
+        let separation = identifier
             .split(|c| SEPARATION_CHARACTERS.contains(c))
             .map(ToString::to_string)
-            .collect();
+            .collect::<Vec<String>>();
+        let mut vec = vec![];
 
-        vec
+        for element in separation {
+            let mut buffer = String::from("");
+
+            for (idx, c) in element.char_indices() {
+                const DEFAULT: char = '?';
+
+                let previous_letter = buffer.chars().last().unwrap_or(DEFAULT);
+                let next_letter = element.chars().skip(idx + 1).next().unwrap_or(DEFAULT);
+
+                match c {
+                    // If we're an uppercase letter and the next letter is lowercase, we start
+                    // a new word from this letter.
+                    // This covers `...Aa`
+                    c if c.is_ascii_uppercase() && next_letter.is_ascii_lowercase() => {
+                        vec.push(buffer);
+                        buffer = c.to_string();
+                    }
+                    // If we're an uppercase letter and the next letter keeps case, continue
+                    // writing to buffer.
+                    // This covers `...AA`
+                    c if c.is_ascii_uppercase() /*&& next_letter.is_ascii_uppercase()*/ => {
+                        buffer += c.to_string().as_str();
+                    }
+                    // We land here if we are in a series of lowercase letters. In this case,
+                    // we keep writing into the buffer
+                    // This covers `...aa`
+                    c if c.is_ascii_lowercase() => {
+                        buffer += c.to_string().as_str();
+                    }
+                    // NOTE: The case `...aA` does not need coverage.
+                    // If the letter has no case, panic.
+                    _ => panic!(
+                        "Identifier expected to consist of upper or lowercase letters, got `...{}{}{}...`",
+                        previous_letter, c, next_letter
+                    ),
+                }
+            }
+
+            if buffer.len() != 0 {
+                vec.push(buffer);
+            }
+        }
+
+        vec.into_iter().filter(|s| s.len() != 0).collect()
     }
 }
 
@@ -75,8 +119,25 @@ mod tests {
     use super::CaseStyles;
 
     #[test]
+    fn split_case() {
+        assert_eq!(
+            "HelloWorld".to_split_case(),
+            vec!["Hello".to_string(), "World".to_string()]
+        );
+        assert_eq!(
+            "helloWorld".to_split_case(),
+            vec!["hello".to_string(), "World".to_string()]
+        );
+        assert_eq!(
+            "__helloWorld".to_split_case(),
+            vec!["hello".to_string(), "World".to_string()]
+        );
+    }
+
+    #[test]
     fn camel_case() {
         assert_eq!("HelloWorld".to_camel_case(), "helloWorld");
+        assert_eq!("HTTPRequest".to_camel_case(), "httpRequest");
     }
 
     #[test]
@@ -97,6 +158,8 @@ mod tests {
     #[test]
     fn pascal_case() {
         assert_eq!("HelloWorld".to_pascal_case(), "HelloWorld");
+        assert_eq!("HTTPRequest".to_pascal_case(), "HttpRequest");
+        assert_eq!("HTTP-Request".to_pascal_case(), "HttpRequest");
     }
 
     #[test]
