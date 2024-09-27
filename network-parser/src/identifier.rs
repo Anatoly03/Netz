@@ -43,10 +43,16 @@ impl<'a, E: nom::error::ParseError<&'a str>> Parser<&'a str, Self, E> for Identi
     }
 }
 
+#[macro_export]
+macro_rules! identifier {
+    ($x:expr) => {
+        let (input, $x) = Identifier::parse(input)?;
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     #[test]
     fn simple() {
