@@ -1,10 +1,12 @@
-//!
+//! This module contains the identifier combinator. It will parse
 
 use nom::{
     self, bytes::complete::is_a, character::complete::alphanumeric1, combinator::recognize,
     multi::many0_count, sequence::pair, Parser,
 };
 use util_cases::CaseStyles;
+
+use crate::combinator::whitespace::read_ignored;
 
 ///
 #[derive(Clone)]
@@ -31,6 +33,7 @@ impl CaseStyles for Identifier {
 impl<'a, E: nom::error::ParseError<&'a str>> Parser<&'a str, Self, E> for Identifier {
     fn parse(&mut self, input: &'a str) -> nom::IResult<&'a str, Self, E> {
         // TODO let (input, _comment) = Comment::parse(input)?;
+        // let (input, _) = read_ignored(input)?;
 
         let (input, identity) = recognize(pair(
             is_a("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_"),
@@ -43,12 +46,12 @@ impl<'a, E: nom::error::ParseError<&'a str>> Parser<&'a str, Self, E> for Identi
     }
 }
 
-#[macro_export]
-macro_rules! identifier {
-    ($x:expr) => {
-        let (input, $x) = Identifier::parse(input)?;
-    };
-}
+// #[macro_export]
+// macro_rules! identifier {
+//     ($x:expr) => {
+//         let (input, $x) = Identifier::parse(input)?;
+//     };
+// }
 
 #[cfg(test)]
 mod tests {

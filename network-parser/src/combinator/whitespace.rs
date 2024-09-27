@@ -72,12 +72,12 @@ pub fn read_ignored(mut input: &str) -> IResult<&str, bool> {
     IResult::Ok((input, tmp_input != input))
 }
 
-#[macro_export]
-macro_rules! whitespace {
-    () => {
-        let (input, _) = read_ignored(input)?;
-    };
-}
+// #[macro_export]
+// macro_rules! whitespace {
+//     () => {
+//         let (input, _) = read_ignored(input)?;
+//     };
+// }
 
 #[cfg(test)]
 mod tests {
