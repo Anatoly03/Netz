@@ -1,13 +1,16 @@
-//! This module contains the identifier combinator. It will parse
+//! This module contains the identifier combinator. It will try to
+//! parse any identifier in the input into a variable or cancel with
+//! an error.
+//! 
+//! ```rs
+//! keyword!(input, "struct");
+//! ```
 
 use nom::{
     self, bytes::complete::is_a, character::complete::alphanumeric1, combinator::recognize,
     multi::many0_count, sequence::pair, Parser,
 };
 use util_cases::CaseStyles;
-
-use crate::whitespace;
-use crate::combinator::whitespace::read_ignored;
 
 ///
 #[derive(Clone)]
