@@ -1,3 +1,3 @@
 [workspace]
 
-members = ["network-parser", "network-library", "network-cli"]
+members = ["network-parser", "network-library", "network-cli", "util-cases"]
