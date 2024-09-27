@@ -9,6 +9,9 @@ const SEPARATION_CHARACTERS: &str = &"-_~,.";
 /// Defines methods to convert an identifier into various case styles
 /// based on the implemented word splitter method.
 pub trait CaseStyles {
+    /// Splits an identifier into atomic words. A word can be either uppercase (`ABC`)
+    /// capitalized (`Abc`), or lowercase (`abc`). This method will panic if it has to
+    /// work with case insensitive characters other than a few separation markers.
     fn to_split_case(&self) -> Vec<String>;
 
     /// Converts the identifier to flatcase (`flatcase`).
