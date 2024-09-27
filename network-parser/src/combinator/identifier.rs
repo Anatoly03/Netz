@@ -52,7 +52,7 @@ impl<'a, E: nom::error::ParseError<&'a str>> Parser<&'a str, Self, E> for Identi
 
 #[macro_export]
 macro_rules! identifier {
-    ($i:ident) => {
+    ($i:ident, $x:ident) => {
         whitespace!($i);
         let ($i, $x) = Identifier::parse($i)?;
     };
