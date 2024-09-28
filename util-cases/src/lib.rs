@@ -6,8 +6,30 @@
 //! separation markers, like the dash and the underscore, with a `word` being
 //! defined as a lexicographical atomic component of the identifier.
 
+use paste::paste;
+
 /// Contains the characters that case insensitive separate identifier words.
 const SEPARATION_CHARACTERS: &str = &"-_~,. ";
+
+macro_rules! add_case {
+    (
+        $(#[$outer:meta])*
+        fn $case_name:ident (&$s:ident) -> String
+        $builder:block
+    ) => {
+        paste! {
+            $(#[$outer])*
+            fn [<to_ $case_name>] (&$s) -> String {
+                $builder
+            }
+
+            $(#[$outer])*
+            fn [<is_strict_ $case_name>] (&$s) -> bool {
+                &$s.to_split_case().join("") == &$s.[<to_ $case_name>]()
+            }
+        }
+    };
+}
 
 /// Defines methods to convert an identifier into various case styles
 /// based on the implemented word splitter method.
@@ -17,10 +39,27 @@ pub trait CaseStyles {
     /// work with case insensitive characters other than a few separation markers.
     fn to_split_case(&self) -> Vec<String>;
 
-    /// Converts the identifier to flatcase (`flatcase`).
-    fn to_flat_case(&self) -> String {
-        self.to_split_case().join("").to_lowercase()
+    add_case!{
+        /// The flat case (`flatcase`) conversion concatenates the
+        /// words of an identifier into lowercase letters without
+        /// separators.
+        /// 
+        /// An identifier is in flatcase, if it is lowercase and
+        /// consists of one word.
+        fn flat_case(&self) -> String {
+            self.to_split_case().join("").to_lowercase()
+        }
     }
+
+    // /// Converts the identifier to flatcase (`flatcase`).
+    // add_case!(flat_case, |split_case: Vec<String>| {
+    //     split_case.join("").to_lowercase()
+    // });
+
+    /// Converts the identifier to flatcase (`flatcase`).
+    // fn to_flat_case(&self) -> String {
+    //     self.to_split_case().join("").to_lowercase()
+    // }
 
     /// Converts the identifier to kebab case (`dash-case`).
     fn to_kebab_case(&self) -> String {
@@ -180,6 +219,8 @@ mod tests {
     #[test]
     fn flat_case() {
         assert_eq!("HelloWorld".to_flat_case(), "helloworld");
+        assert!("flatcase".is_strict_flat_case());
+        assert!(!"PascalCase".is_strict_flat_case());
     }
 
     #[test]
