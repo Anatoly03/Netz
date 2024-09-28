@@ -1,7 +1,10 @@
 //! This crate implements a utility trait that converts any string to a
 //! particular case style. The case names are majorly named after the answer
 //! to the StackOverflow question [What are the different kinds of cases?]
-//! (https://stackoverflow.com/questions/17326185/what-are-the-different-kinds-of-cases). An identifier is a string consisting of alphanumeric characters and a few separation markers, like the dash and the underscore, with a `word` being defined as a lexicographical atomic component of the identifier.
+//! (https://stackoverflow.com/questions/17326185/what-are-the-different-kinds-of-cases).
+//! An identifier is a string consisting of alphanumeric characters and a few
+//! separation markers, like the dash and the underscore, with a `word` being
+//! defined as a lexicographical atomic component of the identifier.
 
 /// Contains the characters that case insensitive separate identifier words.
 const SEPARATION_CHARACTERS: &str = &"-_~,.";
