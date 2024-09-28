@@ -8,6 +8,7 @@ All custom types in NetFile have to follow a strict [identifier case](https://st
 
 ### Structures
 
+- [x] Syntax Highlight Defined
 - [ ] Parser Implemented
 - [ ] Parser Tests Implemented
 - [ ] Generator Implemented
@@ -34,6 +35,7 @@ struct Message {
 
 ### Types
 
+- [ ] Syntax Highlight Defined
 - [ ] Parser Implemented
 - [ ] Parser Tests Implemented
 - [ ] Generator Implemented
@@ -57,6 +59,7 @@ type string = u8[];
 
 ### Enumerables
 
+- [ ] Syntax Highlight Defined
 - [ ] Parser Implemented
 - [ ] Parser Tests Implemented
 - [ ] Generator Implemented
@@ -76,6 +79,7 @@ enum MessageType {
 
 ### Protocol
 
+- [ ] Syntax Highlight Defined
 - [ ] Parser Implemented
 - [ ] Parser Tests Implemented
 - [ ] Generator Implemented
@@ -99,6 +103,7 @@ protocol Connection {
 
 ### Messages
 
+- [ ] Syntax Highlight Defined
 - [ ] Parser Implemented
 - [ ] Parser Tests Implemented
 - [ ] Generator Implemented
