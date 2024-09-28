@@ -1,0 +1,23 @@
+
+// TODO add extension under a feature flag, that links deno with the project
+
+extension "js" {
+    registerStructDecorator({
+        name: 'hello',
+        afterBuild: (struct: NetzStruct) => {
+            if (!struct.fields.contains("hello")) {
+                throw new Error("The `@hello` decorator requires" +
+                    "the struct to define the `hello` field.");
+            }
+        }
+    })
+}
+
+/**
+ * @!hello The hello modifier is defined in this extension using
+ * TypeScript. Hence `@!` will not warn, because it exist in the
+ * current context.
+ */
+struct Foo {
+    hello: string;
+}

@@ -3,6 +3,9 @@
 	"name": "Netz",
 	"patterns": [
 		{
+			"include": "#extension"
+		},
+		{
 			"include": "#comments"
 		},
 		{
@@ -25,6 +28,37 @@
 		}
 	],
 	"repository": {
+        "extension": {
+            "patterns": [{
+                "begin": "\\b(extension)\\s+(\"js\")\\s*\\{",
+                "end": "\\}",
+                "beginCaptures": {
+                    "1": {
+                        "name": "keyword.control.netz"
+                    },
+                    "2": {
+                        "name": "constant.language.netz"
+                    }
+                },
+                "patterns": [{
+                    "include": "source.ts"
+                }]
+            }, {
+                "begin": "\\b(extension)\\s+(\"lua\")\\s*\\{",
+                "end": "\\}",
+                "beginCaptures": {
+                    "1": {
+                        "name": "keyword.control.netz"
+                    },
+                    "2": {
+                        "name": "constant.language.netz"
+                    }
+                },
+                "patterns": [{
+                    "include": "source.lua"
+                }]
+            }]
+        },
 		"comments": {
 			"name": "comment.netz",
 			"patterns": [{
