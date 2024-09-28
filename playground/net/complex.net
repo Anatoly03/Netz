@@ -12,7 +12,6 @@ struct Bar {
 }
 
 struct FooBar {
-    Foo;
+    Foo[];
     Bar;
 }
-

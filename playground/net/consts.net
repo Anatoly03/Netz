@@ -1,0 +1,16 @@
+
+// TODO add debugging tags and improve testing
+// TODO current tests only check for compilation
+
+/**
+ * @description Provides the local Netz version. It
+ * can be different accross devices.
+ */
+const VERSION: string = $"${NETZ_VERSION}";
+
+/**
+ * @description Exposes the Netz schema, a JSON
+ * object that defines all elements of the encoding
+ * format.
+ */
+const SCHEMA: string = $"${NETZ_SCHEMA}";

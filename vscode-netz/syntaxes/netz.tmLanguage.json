@@ -3,29 +3,117 @@
 	"name": "Netz",
 	"patterns": [
 		{
+			"include": "#comments"
+		},
+		{
 			"include": "#keywords"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#types"
+		},
+		{
+			"include": "#variables"
 		},
 		{
 			"include": "#strings"
 		}
 	],
 	"repository": {
+		"comments": {
+			"name": "comment.netz",
+			"patterns": [{
+                "begin": "//",
+                "end": "\n",
+				"name": "comment.line.double-slash.netz"
+			}, {
+                "begin": "/\\*\\*(?!/)",
+                "end": "\\*/",
+                "name": "comment.block.documentation.netz",
+                "patterns": [{
+                    "match": "@[a-zA-Z][a-zA-Z0-9_]*\\b",
+                    "name": "storage.type.class.doc"
+                }]
+			}, {
+                "begin": "/\\*",
+                "end": "\\*/",
+                "name": "comment.block.netz"
+			}]
+		},
 		"keywords": {
 			"patterns": [{
-				"name": "keyword.control.netz",
-				"match": "\\b(if|while|for|return)\\b"
+				"name": "storage.type.netz",
+				"match": "\\b(struct|const)\\b"
+			}]
+		},
+		"constants": {
+			"patterns": [{
+				"name": "variable.other.constant.netz",
+				"match": "\\b([A-Z][A-Z0-9_]*)\\b"
+			}]
+		},
+		"types": {
+			"patterns": [{
+				"name": "support.type.netz",
+				"match": "\\b([A-Z][a-zA-Z0-9_]*)\\b"
+			}, {
+				"name": "support.type.netz",
+				"match": "\\b(bool|bit|string|u8|u16|u32|u64|i8|i16|i32|i64|f32|f64)\\b"
+			}]
+		},
+		"variables": {
+			"patterns": [{
+				"name": "variable.other.netz",
+				"match": "\\b([a-z][a-zA-Z0-9_]*)\\b"
 			}]
 		},
 		"strings": {
-			"name": "string.quoted.double.netz",
-			"begin": "\"",
-			"end": "\"",
-			"patterns": [
-				{
-					"name": "constant.character.escape.netz",
-					"match": "\\\\."
-				}
-			]
+            "patterns": [{
+                "begin": "\\$\"",
+                "end": "\"",
+                "name": "string.interpolated.netz",
+                "patterns": [
+                    {
+                        "name": "constant.character.escape.netz",
+                        "match": "\\\\."
+                    },
+                    {
+                        "begin": "\\${",
+                        "end": "}",
+                        "name": "meta.template.expression",
+                        "beginCaptures": {
+                            "0": {
+                                "name": "constant.character.escape.netz"
+                            }
+                        },
+                        "endCaptures": {
+                            "0": {
+                                "name": "constant.character.escape.netz"
+                            }
+                        },
+                        "patterns": [{
+                            "include": "#variables"
+                        }, {
+                            "include": "#constants"
+                        }, {
+                            "match": ".+",
+                            "name": "invalid.illegal.netz"
+                        }]
+                    }
+                ]
+            }, {
+                "begin": "\"",
+                "end": "\"",
+                "name": "string.quoted.double.netz",
+                "patterns": [
+                    {
+                        "name": "constant.character.escape.netz",
+                        "match": "\\\\."
+                    }
+                ]
+            }]
 		}
 	},
 	"scopeName": "source.netz"
