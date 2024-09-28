@@ -1,0 +1,21 @@
+//! This is the standard library for Netz files.
+
+/// @description The primitive string type, gets encoded as a
+/// byte array and converted to its' ascii representation upon
+/// decoding.
+///
+/// @string_convert("ascii")
+type string = u8[];
+
+/// @description The boolean data type, inherits from [u8] and
+/// provides the constant values [true] and [false]. Note that,
+/// the implementation of boolean is language-dependant. During
+/// decoding, every non-zero integer will be treated as native
+/// [true].
+type bool = u8;
+
+// TODO
+const true: bool = 1;
+
+// TODO
+const false: bool = 0;

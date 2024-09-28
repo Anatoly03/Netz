@@ -6,11 +6,17 @@
  * @description Provides the local Netz version. It
  * can be different accross devices.
  */
-const VERSION: string = $"${NETZ_VERSION}";
+const VERSION: string = $"Version: ${NETZ_VERSION}";
 
 /**
  * @description Exposes the Netz schema, a JSON
  * object that defines all elements of the encoding
  * format.
  */
-const SCHEMA: string = $"${NETZ_SCHEMA}";
+const SCHEMA: string = NETZ_SCHEMA;
+
+/**
+ * @description A magic number, which is the largest
+ * unsigned integer that can be stored in 32 bits.
+ */
+const MAGIC: u32 = u32.MAX;

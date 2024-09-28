@@ -62,10 +62,6 @@
 		"comments": {
 			"name": "comment.netz",
 			"patterns": [{
-                "begin": "//",
-                "end": "\n",
-				"name": "comment.line.double-slash.netz"
-			}, {
                 "begin": "/\\*\\*(?!/)",
                 "end": "\\*/",
                 "name": "comment.block.documentation.netz",
@@ -87,9 +83,34 @@
                     }]
                 }]
 			}, {
+                "begin": "///",
+                "end": "\n",
+                "name": "comment.triple-slash.documentation.netz",
+                "patterns": [{
+                    "begin": "@!?[a-zA-Z][a-zA-Z0-9_]*\\w*\\(",
+                    "end": "\\)",
+                    "name": "storage.type.class.doc",
+                    "patterns": [{
+                        "include": "$self"
+                    }]
+                }, {
+                    "match": "@!?[a-zA-Z][a-zA-Z0-9_]*\\b",
+                    "name": "storage.type.class.doc"
+                }, {
+                    "begin": "\\[",
+                    "end": "\\]",
+                    "patterns": [{
+                        "include": "$self"
+                    }]
+                }]
+			}, {
                 "begin": "/\\*",
                 "end": "\\*/",
                 "name": "comment.block.netz"
+			}, {
+                "begin": "//",
+                "end": "\n",
+				"name": "comment.line.double-slash.netz"
 			}]
 		},
 		"keywords": {
