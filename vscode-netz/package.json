@@ -1,0 +1,25 @@
+{
+  "name": "vscode-netz",
+  "displayName": "vscode-netz",
+  "description": "Language server and syntax highlight for Netz files.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "netz",
+      "aliases": ["Netz", "netz"],
+      "extensions": [".net",".netz"],
+      "configuration": "./configuration/language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "netz",
+      "scopeName": "source.netz",
+      "path": "./syntaxes/netz.tmLanguage.json"
+    }]
+  }
+}
