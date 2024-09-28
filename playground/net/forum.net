@@ -1,0 +1,41 @@
+
+// TODO add debugging tags and improve testing
+// TODO current tests only check for compilation
+
+/**
+ * @!limit(20)
+ *
+ * @note The `!` symbol after the at denotes a required extension.
+ * Generally extensions in a comment can be written for one agent
+ * only, such as server rate limits, which can be ignored by the
+ * client. The `@!` syntax forces the client to recognize the
+ * extension or compile with incompatibility warnings.
+ *
+ * The `limit` extension for all types will assert an upper range
+ * of encoding bytes. Particularly for the client it checks if the
+ * input is within range before sending, and on the server it will
+ * drop all packets that are too large.
+ */
+type Name = string;
+
+/**
+ * @!limit(200)
+ */
+type Content = string;
+
+/**
+ * @description A [User] is a collection of attributes that are
+ * stored in the server database.
+ */
+struct User {
+    Name;
+}
+
+/**
+ * @description A [Post] is a message or blog entry. The author of
+ * the post is adressed by [author] and its' content by [content].
+ */
+struct Post {
+    author: User;
+    Content;
+}

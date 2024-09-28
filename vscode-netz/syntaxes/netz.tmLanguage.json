@@ -36,14 +36,14 @@
                 "end": "\\*/",
                 "name": "comment.block.documentation.netz",
                 "patterns": [{
-                    "begin": "@[a-zA-Z][a-zA-Z0-9_]*\\w*\\(",
+                    "begin": "@!?[a-zA-Z][a-zA-Z0-9_]*\\w*\\(",
                     "end": "\\)",
                     "name": "storage.type.class.doc",
                     "patterns": [{
                         "include": "$self"
                     }]
                 }, {
-                    "match": "@[a-zA-Z][a-zA-Z0-9_]*\\b",
+                    "match": "@!?[a-zA-Z][a-zA-Z0-9_]*\\b",
                     "name": "storage.type.class.doc"
                 }, {
                     "begin": "\\[",

@@ -6,9 +6,10 @@ struct Foo {
     small: u8;
 }
 
-struct Bar {
-    medium: u16;
-    large: u32;
+enum Bar {
+    Small(u8) = 1;
+    Medium(u16) = 2;
+    Large(u32) = 3;
 }
 
 struct FooBar {
