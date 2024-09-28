@@ -7,7 +7,7 @@
 //! defined as a lexicographical atomic component of the identifier.
 
 /// Contains the characters that case insensitive separate identifier words.
-const SEPARATION_CHARACTERS: &str = &"-_~,.";
+const SEPARATION_CHARACTERS: &str = &"-_~,. ";
 
 /// Defines methods to convert an identifier into various case styles
 /// based on the implemented word splitter method.
