@@ -54,11 +54,33 @@ macro_rules! add_case {
     ) => {
         paste! {
             $(#[$outer])*
+            ///
+            /// The method `to_case` will return a string for every
+            /// `case` that adapts the words of an identifier to the
+            /// case  definition.
+            /// 
+            /// ```rs
+            /// use util_cases::CaseStyles;
+            /// 
+            /// assert_eq!("Hello World".to_camel_case(), "helloWorld");
+            /// assert_eq!("Hello World".to_pascal_case(), "HelloWorld");
+            /// ```
             fn [<to_ $case_name>] (&$s) -> String {
                 $builder
             }
 
             $(#[$outer])*
+            ///
+            /// The method `is_strict_case` will return true for every
+            /// `case`, if the conversion to split case and generation
+            /// matches case sensitive.
+            /// 
+            /// ```rs
+            /// use util_cases::CaseStyles;
+            /// 
+            /// assert!("helloWorld".is_strict_camel_case());
+            /// assert!("HttpRequest".is_strict_pascal_case());
+            /// ```
             fn [<is_strict_ $case_name>] (&$s) -> bool {
                 &$s.to_split_case().join("") == &$s.[<to_ $case_name>]()
             }
