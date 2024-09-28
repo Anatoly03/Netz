@@ -1,0 +1,19 @@
+//! This is an example of privileged communication in Netz files.
+
+flags Permission {
+    Read       = 1; // Flag 1 is equivalent to ooo1 in binary.
+    Write      = 2; // Flag 2 is equivalent to oo1o in binary.
+    Moderation = 3; // Flag 3 is equivalent to o1oo in binary.
+    Admin      = 4; // Flag 4 is equivalent to 1ooo in binary.
+}
+
+struct User {
+    Permission;
+}
+
+/**
+ * @privilege(Socket.user.permission)
+ */
+struct Socket {
+    User; // A socket will be associated with a registered user.
+}

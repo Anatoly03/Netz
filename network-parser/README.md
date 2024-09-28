@@ -35,7 +35,7 @@ struct Message {
 
 ### Types
 
-- [ ] Syntax Highlight Defined
+- [x] Syntax Highlight Defined
 - [ ] Parser Implemented
 - [ ] Parser Tests Implemented
 - [ ] Generator Implemented

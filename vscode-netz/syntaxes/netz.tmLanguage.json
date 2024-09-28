@@ -9,22 +9,10 @@
 			"include": "#comments"
 		},
 		{
-			"include": "#keywords"
-		},
-		{
-			"include": "#constants"
-		},
-		{
-			"include": "#types"
-		},
-		{
-			"include": "#variables"
-		},
-		{
-			"include": "#numbers"
-		},
-		{
 			"include": "#strings"
+		},
+		{
+			"include": "#identifiers"
 		}
 	],
 	"repository": {
@@ -113,39 +101,6 @@
 				"name": "comment.line.double-slash.netz"
 			}]
 		},
-		"keywords": {
-			"patterns": [{
-				"name": "storage.type.netz",
-				"match": "\\b(struct|enum|type|const)\\b"
-			}]
-		},
-		"constants": {
-			"patterns": [{
-				"name": "variable.other.constant.netz",
-				"match": "\\b([A-Z][A-Z0-9_]*)\\b"
-			}]
-		},
-		"types": {
-			"patterns": [{
-				"name": "support.type.netz",
-				"match": "\\b([A-Z][a-zA-Z0-9_]*)\\b"
-			}, {
-				"name": "support.type.netz",
-				"match": "\\b(bool|bit|string|u8|u16|u32|u64|i8|i16|i32|i64|f32|f64)\\b"
-			}]
-		},
-		"variables": {
-			"patterns": [{
-				"name": "variable.other.netz",
-				"match": "\\b([a-z][a-zA-Z0-9_]*)\\b"
-			}]
-		},
-		"numbers": {
-			"patterns": [{
-				"name": "constant.numeric.netz",
-				"match": "(\\-)?([0-9]+((\\.)[0-9]*)?|\\.[0-9]+)"
-			}]
-		},
 		"strings": {
             "patterns": [{
                 "begin": "\\$\"",
@@ -171,9 +126,7 @@
                             }
                         },
                         "patterns": [{
-                            "include": "#variables"
-                        }, {
-                            "include": "#constants"
+                            "include": "#identifiers"
                         }, {
                             "match": ".+",
                             "name": "invalid.illegal.netz"
@@ -191,6 +144,39 @@
                     }
                 ]
             }]
+		},
+		"identifiers": {
+			"patterns": [{
+				"name": "storage.type.netz",
+				"match": "\\b(struct|enum|flags|type|const)\\b"
+			}, {
+				"name": "support.type.netz",
+				"match": "\\b(bool|bit|string|u8|u16|u32|u64|i8|i16|i32|i64|f32|f64)\\b"
+			}, {
+                "name": "constant.language",
+                "match": "\\b(true|false|none)\\b"
+            }, {
+                "name": "support.constant",
+                "match": "\\b(true|false|none)\\b"
+            }, {
+				"name": "variable.other.constant.netz",
+				"match": "\\b([A-Z][A-Z0-9_]*)\\b"
+			}, {
+				"name": "support.type.netz",
+				"match": "\\b([A-Z][a-zA-Z0-9_]*)\\b"
+			}, {
+				"name": "variable.other.netz",
+				"match": "\\b([a-z][a-zA-Z0-9_]*)\\b"
+			}, {
+				"name": "constant.numeric.netz",
+				"match": "(\\-)?([0-9]+((\\.)[0-9]*|B|b)?|\\.[0-9]+)"
+			}, {
+				"name": "constant.numeric.binary.netz",
+				"match": "\\b0b[01]+"
+			}, {
+				"name": "constant.numeric.octal.netz",
+				"match": "\\b0x[0-9A-F]+"
+			}]
 		}
 	},
 	"scopeName": "source.netz"

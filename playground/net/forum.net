@@ -1,9 +1,11 @@
+//! This is an example of a forum communication in Netz files.
 
 // TODO add debugging tags and improve testing
 // TODO current tests only check for compilation
 
 /**
- * @!limit(20)
+ * @!limit(20B)
+ * @!case("lowercase")
  *
  * @note The `!` symbol after the at denotes a required extension.
  * Generally extensions in a comment can be written for one agent
@@ -19,7 +21,14 @@
 type Name = string;
 
 /**
- * @!limit(200)
+ * @!limit(70B)
+ * @!regex("[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@example\.com")
+ */
+type EMail = string;
+
+/**
+ * @!limit(200B)
+ * @!sanitize("html")
  */
 type Content = string;
 
