@@ -18,6 +18,9 @@
 			"include": "#variables"
 		},
 		{
+			"include": "#numbers"
+		},
+		{
 			"include": "#strings"
 		}
 	],
@@ -33,8 +36,21 @@
                 "end": "\\*/",
                 "name": "comment.block.documentation.netz",
                 "patterns": [{
+                    "begin": "@[a-zA-Z][a-zA-Z0-9_]*\\w*\\(",
+                    "end": "\\)",
+                    "name": "storage.type.class.doc",
+                    "patterns": [{
+                        "include": "$self"
+                    }]
+                }, {
                     "match": "@[a-zA-Z][a-zA-Z0-9_]*\\b",
                     "name": "storage.type.class.doc"
+                }, {
+                    "begin": "\\[",
+                    "end": "\\]",
+                    "patterns": [{
+                        "include": "$self"
+                    }]
                 }]
 			}, {
                 "begin": "/\\*",
@@ -45,7 +61,7 @@
 		"keywords": {
 			"patterns": [{
 				"name": "storage.type.netz",
-				"match": "\\b(struct|const)\\b"
+				"match": "\\b(struct|enum|type|const)\\b"
 			}]
 		},
 		"constants": {
@@ -67,6 +83,12 @@
 			"patterns": [{
 				"name": "variable.other.netz",
 				"match": "\\b([a-z][a-zA-Z0-9_]*)\\b"
+			}]
+		},
+		"numbers": {
+			"patterns": [{
+				"name": "constant.numeric.netz",
+				"match": "(\\-)?([0-9]+((\\.)[0-9]*)?|\\.[0-9]+)"
 			}]
 		},
 		"strings": {
