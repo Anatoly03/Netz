@@ -39,22 +39,23 @@ impl Into<String> for StringBuilder {
 // ```
 // builder = builder + "export class";
 // ```
-impl std::ops::Add<&str> for StringBuilder {
-    type Output = StringBuilder;
 
-    fn add(mut self, rhs: &str) -> Self::Output {
-        self.write(rhs);
-        self
-    }
-}
+// impl<T: AsRef<str>> std::ops::Add<T> for StringBuilder {
+//     type Output = StringBuilder;
+//
+//     fn add(mut self, rhs: T) -> Self::Output {
+//         self.write(rhs.as_ref());
+//         self
+//     }
+// }
 
 // String Builders accept concatenation with string slices.
 //
 // ```
 // builder += "export class";
 // ```
-impl std::ops::AddAssign<&str> for StringBuilder {
-    fn add_assign(&mut self, rhs: &str) {
-        self.write(rhs);
+impl<T: AsRef<str>> std::ops::AddAssign<T> for StringBuilder {
+    fn add_assign(&mut self, rhs: T) {
+        self.write(rhs.as_ref());
     }
 }
