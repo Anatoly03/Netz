@@ -1,3 +1,7 @@
 # Cargo Generated
 /target
 /Cargo.lock
+
+# Other Generated
+/dist
+/tmp
