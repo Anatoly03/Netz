@@ -11,6 +11,41 @@ use paste::paste;
 /// Contains the characters that case insensitive separate identifier words.
 const SEPARATION_CHARACTERS: &str = &"-_~,. ";
 
+/// The case generator macro expects a documented trait method
+/// and generates case conversions and assertion methods.
+///
+/// ### Usage
+///
+/// ```
+/// use paste::paste; // Dependency
+/// use util_cases::{CaseStyles, add_case};
+/// 
+/// pub trait CustomCaseTrait : CaseStyles {
+///     add_case! {
+///         /// The joke case (`jOkE cAsE`) conversion documentation.
+///         fn joke_case(&self) -> String {
+///             self.to_split_case()
+///                 .into_iter()
+///                 .map(|s| s.char_indices()
+///                     .map(|(idx, c)| {
+///                         if idx & 1 == 0 { c.to_ascii_lowercase() }
+///                         else { c.to_ascii_uppercase() }
+///                     })
+///                     .collect::<Vec<char>>()
+///                     .into_iter()
+///                     .collect()
+///                 )
+///                 .collect::<Vec<String>>()
+///                 .join(" ")
+///         }
+///     }
+/// }
+/// 
+/// impl<T: CaseStyles> CustomCaseTrait for T {}
+/// 
+/// assert_eq!("Hello World".to_joke_case(), "hElLo wOrLd");
+/// ```
+#[macro_export]
 macro_rules! add_case {
     (
         $(#[$outer:meta])*
@@ -39,11 +74,11 @@ pub trait CaseStyles {
     /// work with case insensitive characters other than a few separation markers.
     fn to_split_case(&self) -> Vec<String>;
 
-    add_case!{
+    add_case! {
         /// The flat case (`flatcase`) conversion concatenates the
         /// words of an identifier into lowercase letters without
         /// separators.
-        /// 
+        ///
         /// An identifier is in flatcase, if it is lowercase and
         /// consists of one word.
         fn flat_case(&self) -> String {
@@ -51,51 +86,76 @@ pub trait CaseStyles {
         }
     }
 
-    // /// Converts the identifier to flatcase (`flatcase`).
-    // add_case!(flat_case, |split_case: Vec<String>| {
-    //     split_case.join("").to_lowercase()
-    // });
-
-    /// Converts the identifier to flatcase (`flatcase`).
-    // fn to_flat_case(&self) -> String {
-    //     self.to_split_case().join("").to_lowercase()
-    // }
-
-    /// Converts the identifier to kebab case (`dash-case`).
-    fn to_kebab_case(&self) -> String {
-        self.to_split_case().join("-").to_lowercase()
+    add_case! {
+        /// The kebab case or dash case (`dash-case`) conversion
+        /// joins the words of an identifier into lowercase letters
+        /// with a dash.
+        ///
+        /// An identifier is in kebab case, if it is lowercase and
+        /// the words are separated by one dash.
+        fn kebab_case(&self) -> String {
+            self.to_split_case().join("-").to_lowercase()
+        }
     }
 
-    /// Converts the identifier to camel case (`camelCase`).
-    fn to_camel_case(&self) -> String {
-        let mut s = self.to_pascal_case();
-        s[0..1].make_ascii_lowercase();
-        s
+    add_case! {
+        /// The camel case (`camelCase`) conversion joins the words
+        /// of an identifier without separation characters. Each,
+        /// except the first word, will be capitalized.
+        ///
+        /// An identifier is in camel case, if the first letter is
+        /// lower case and there are no separation symbols.
+        fn camel_case(&self) -> String {
+            let mut s = self.to_pascal_case();
+            s[0..1].make_ascii_lowercase();
+            s
+        }
     }
 
-    /// Converts the identifier to pascal case (`PascalCase`, `CapitalCamelCase`).
-    fn to_pascal_case(&self) -> String {
-        let capitalize = |s: &String| {
-            let mut out = s.to_lowercase().clone();
-            out[0..1].make_ascii_uppercase();
-            out
-        };
+    add_case! {
+        /// The pascal case or capital camel case (`PascalCase`) conversion
+        /// joins the words of an identifier without separation characters.
+        /// Each word is capitalized.
+        ///
+        /// An identifier is in pascal case, if the first letter is
+        /// in capital case and there are no separation symbols.
+        fn pascal_case(&self) -> String {
+            let capitalize = |s: &String| {
+                let mut out = s.to_lowercase().clone();
+                out[0..1].make_ascii_uppercase();
+                out
+            };
 
-        (&self.to_split_case())
-            .into_iter()
-            .map(capitalize)
-            .collect::<Vec<String>>()
-            .join("")
+            (&self.to_split_case())
+                .into_iter()
+                .map(capitalize)
+                .collect::<Vec<String>>()
+                .join("")
+        }
     }
 
-    /// Converts the identifier to snake case (`snake_case`).
-    fn to_snake_case(&self) -> String {
-        self.to_split_case().join("_").to_lowercase()
+    add_case! {
+        /// The snake case (`snake_case`) conversion joins the words
+        /// of an identifier with the underscore. The resulting word
+        /// is lowercase.
+        ///
+        /// An identifier is in snake case, if it is lowercase and
+        /// the words are separated by one dash.
+        fn snake_case(&self) -> String {
+            self.to_split_case().join("_").to_lowercase()
+        }
     }
 
-    /// Converts the identifier to constant case (`UPPER_CASE`).
-    fn to_constant_case(&self) -> String {
-        self.to_split_case().join("_").to_uppercase()
+    add_case! {
+        /// The constant case (`UPPER_CASE`) conversion joins the words
+        /// of an identifier with the underscore. The resulting word
+        /// is uppercase.
+        ///
+        /// An identifier is in constant case, if it is uppercase and
+        /// the words are separated by one underscore.
+        fn constant_case(&self) -> String {
+            self.to_split_case().join("_").to_uppercase()
+        }
     }
 }
 
@@ -117,13 +177,13 @@ impl<T: AsRef<str>> CaseStyles for T {
             // will split any input in `dash-case` and `snake_case` into two words,
             // but the individual word components have to be split again based on
             // their case. The following needs to be considered:
-            // 
+            //
             // - `Dashed-SnakeCase` equives `dashed-snake-case`
             // - `HTTPRequest` equives `http-request`
             // - `ECMAScript` equives `ecma-script`
             // - `camelsLoveOCaml` equives `camels-love-o-caml`,
             //   ambigious with semantic `..-ocaml`
-            // 
+            //
             // From these observations, here are the rules of the algorithm
             // ranked by priority:
             // 1. All lower case letters following one lower case letter must be part
