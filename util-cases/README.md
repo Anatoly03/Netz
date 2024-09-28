@@ -16,6 +16,7 @@ Specific sbbreviations may be converted unintuitively into the cases, like `OCam
 
 ### Open for Contribution
 
-- `HTTP-Header-Case`
 - `TRAIN-CASE`, `COBOL-CASE`
+- `HTTP-Header-Case` a case insensitive version of train case, which keeps uppercase words.
 - `_undercoreNotation` (underscore and camel case)
+- `HTTPRequest` a case insensitive version of camel case, which keeps uppercase words.
