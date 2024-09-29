@@ -9,7 +9,7 @@ pub fn main() {}
 // }
 
 #[grammar{ (identifier ":")? type_name ";" }]
-struct _Field {
+pub struct _Field {
     identifier: Option<String>,
     type_name: String,
 }

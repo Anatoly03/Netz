@@ -23,4 +23,5 @@ struct Struct;
 
 ### Open for Contribution
 
-- TODO
+- Coverage of more struct grammar
+- TODO ...

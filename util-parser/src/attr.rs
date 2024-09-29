@@ -1,7 +1,4 @@
-use std::fmt::Display;
-
 use proc_macro::{Delimiter, TokenStream, TokenTree};
-// use util_cases::CaseStyles;
 
 #[derive(Debug)]
 pub enum Context {

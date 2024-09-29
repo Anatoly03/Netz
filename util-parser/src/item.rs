@@ -1,5 +1,8 @@
 use crate::attr::Context;
 use proc_macro::{Delimiter, TokenStream, TokenTree};
+use quote::ToTokens;
+use syn::{parse_macro_input, spanned::Spanned, Field, ItemStruct};
+// use util_cases::CaseStyles;
 
 pub enum IdentifierCounter {
     None,   // default
@@ -9,68 +12,38 @@ pub enum IdentifierCounter {
 }
 
 pub fn generate(context: &Context, items: TokenStream) -> TokenStream {
-    for item in items.clone().into_iter() {
-        match item {
-            TokenTree::Literal(literal) => {
-                if let Some(source) = literal.span().source_text() {
-                    println!("Tag:   {source}");
-                    // vec.push(Context::Keyword(source));
-                    continue;
-                }
-                // TODO error: could not unwrap literal
-            }
-            TokenTree::Punct(punct) => {
-                let symbol = punct.as_char();
-                println!("Punct: {symbol}");
-            }
-            TokenTree::Ident(ident) => {
-                let st = ident.to_string();
-                let mut iter = st.chars();
+    let input = parse_macro_input!(items as ItemStruct);
+    let name = input.ident.to_string();
 
-                let is_variable = loop {
-                    match iter.next() {
-                        Some(c) if c.is_ascii_uppercase() => break false,
-                        Some(c) if c.is_ascii_lowercase() => break true,
-                        Some(c) => continue,
-                        None => break true,
-                    }
-                };
-
-                // if is_variable {
-                //     vec.push(Context::Identifier(st))
-                // } else {
-                //     vec.push(Context::TypeReference(st))
-                // };
-
-                println!("Ident: {}", ident.to_string());
-            }
-            TokenTree::Group(group) => {
-                match group.delimiter() {
-                    Delimiter::Brace => {
-                        let subcontext = generate(context, group.stream());
-                        // vec.push(subcontext);
-                    }
-                    Delimiter::Bracket => {
-                        let subcontext = generate(context, group.stream());
-                        // vec.push(subcontext);
-                    }
-                    Delimiter::None => {
-                        let subcontext = generate(context, group.stream());
-                        // vec.push(subcontext);
-                    }
-                    Delimiter::Parenthesis => {
-                        let subcontext = generate(context, group.stream());
-                        // vec.push(subcontext);
-                    }
-                }
-            }
-        }
-
-        // println!("{item:?}");
+    // TODO use where clauses?
+    // TODO instead of panic, use: https://stackoverflow.com/questions/57025894/issuing-a-warning-at-compile-time
+    if let Some(wher) = input.generics.where_clause {
+        panic!("The macro [grammar] does not support `where` clauses, but `{name}` had it implemented.")
     }
 
-    println!();
+    if let Some(c) = input.generics.const_params().next() {
+        panic!("The macro [grammar] does not support const generics, but `{name}` had `{}` implemented.", c.ident.to_string())
+    }
 
+    if let Some(c) = input.generics.lifetimes().next() {
+        panic!("The macro [grammar] does not support lifetimes, but `{name}` had `{}` implemented.", c.lifetime.ident.to_string())
+    }
 
-    todo!()
+    if let Some(c) = input.generics.type_params().next() {
+        panic!("The macro [grammar] does not support generics, but `{name}` had `{}` implemented.", c.ident.to_string())
+    }
+
+    let declared_fields = input.fields.iter()
+            .enumerate()
+            .map(|(_idx, field)| {
+                if let Some(field_name) = &field.ident {
+                    return field_name.to_string();
+                }
+                panic!("The macro [grammar] does not support tuple structs: `{name}`");
+            })
+            .collect::<Vec<String>>();
+
+    println!("{declared_fields:?}");
+
+    input.to_token_stream().into()
 }
