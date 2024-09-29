@@ -1,6 +1,8 @@
 mod attr;
-use attr::Context;
+mod item;
 
+use attr::Context;
+use item::generate;
 use proc_macro::TokenStream;
 
 #[proc_macro_attribute]
@@ -8,15 +10,10 @@ pub fn grammar(attrs: TokenStream, items: TokenStream) -> TokenStream {
     let context = Context::from(attrs);
     println!("{context:?}");
 
-    for item in items.clone().into_iter() {
-        // if let Some(token) = item.
-        println!("{item:?}");
-    }
+    generate(&context, items)
 
-    println!();
-
-    println!("item: \"{items}\"");
-    items
+    // println!("item: \"{items}\"");
+    // items
 }
 
 // pub fn add(left: u64, right: u64) -> u64 {

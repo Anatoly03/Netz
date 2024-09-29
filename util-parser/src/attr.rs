@@ -10,6 +10,7 @@ pub enum Context {
     TypeReference(String),
     Scope(Vec<Context>),
     Option(Box<Context>),
+    Repetition(Box<Context>),
 }
 
 impl From<TokenStream> for Context {
@@ -36,10 +37,16 @@ impl From<TokenStream> for Context {
                             if let Some(v) = vec.pop() {
                                 vec.push(Context::Option(Box::new(v)));
                             }
-                            // TODO error: `?` was used at the beginning of a scope 
+                            // TODO error: `?` was used at the beginning of a scope
+                        }
+                        '*' => {
+                            if let Some(v) = vec.pop() {
+                                vec.push(Context::Repetition(Box::new(v)));
+                            }
+                            // TODO error: `*` was used at the beginning of a scope
                         }
                         _ => {
-                            // TODO error: expected one of `?`, got `{c}`
+                            // TODO error: expected one of `?` or `*`, got `{c}`
                         }
                     }
                     let symbol = punct.as_char();
@@ -72,7 +79,7 @@ impl From<TokenStream> for Context {
                             let subcontext = Self::from(group.stream());
                             vec.push(subcontext);
                         }
-                        del => panic!("expected parenthesis, got {del:?}"),
+                        del => {} //TODO panic!("expected parenthesis, got {del:?}"),
                     }
                 }
             }

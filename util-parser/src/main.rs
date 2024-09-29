@@ -8,7 +8,7 @@ pub fn main() {}
 //     pub hi: usize,
 // }
 
-#[grammar{ (identifier ":")? type_name ";" 8 }]
+#[grammar{ (identifier ":")? type_name ";" }]
 struct _Field {
     identifier: Option<String>,
     type_name: String,
