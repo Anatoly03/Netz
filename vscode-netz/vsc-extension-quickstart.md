@@ -18,6 +18,7 @@
 
 * You can relaunch the extension from the debug toolbar after making changes to the files listed above.
 * You can also reload (`Ctrl+R` or `Cmd+R` on Mac) the VS Code window with your extension to load your changes.
+* You can find a list of naming conventions at the [manual of language grammars](https://macromates.com/manual/en/language_grammars).
 
 ## Add more language features
 
