@@ -6,7 +6,7 @@ use proc_macro::TokenStream;
 #[proc_macro_attribute]
 pub fn grammar(attrs: TokenStream, items: TokenStream) -> TokenStream {
     let context = Context::from(attrs);
-    println!();
+    println!("{context:?}");
 
     for item in items.clone().into_iter() {
         // if let Some(token) = item.

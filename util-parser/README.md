@@ -3,13 +3,13 @@
 This crate implements utility macros that implement a static parsing method on a struct. 
 
 ```rs
-#[grammar{ (identifier ":")? type_name ";" }]
+#[grammar{ (identifier ":")? type_name }]
 struct Field {
     identifier: Option<String>,
     type_name: String,
 }
 
-#[grammar{ "struct" Identifier? "{" Field * "}" }]
+#[grammar{ "struct" Identifier? "{" (Field (";" Field) *)? "}" ";" ? }]
 struct Struct;
 ```
 
