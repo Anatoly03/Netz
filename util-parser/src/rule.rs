@@ -1,16 +1,21 @@
+//! This module contains the ruleset parser. A ruleset is an AST, which represents
+//! the grammar inside the macro as a production rule. Consider `[grammar{ "@" ident
+//! }]` for any struct `T` as a production of form `<T> -> "@" <Ident>`.
+
 use proc_macro::{Delimiter, TokenStream, TokenTree};
 
 #[derive(Debug)]
-pub enum Context {
+pub enum Rule {
     Keyword(String),
     Identifier(String),
     TypeReference(String),
-    Scope(Vec<Context>),
-    Option(Box<Context>),
-    Repetition(Box<Context>),
+    Scope(Vec<Rule>),
+    Option(Box<Rule>),
+    Repetition(Box<Rule>),
+    Branch(Vec<Rule>),
 }
 
-impl From<TokenStream> for Context {
+impl From<TokenStream> for Rule {
     fn from(attrs: TokenStream) -> Self {
         let mut vec = Vec::new();
 
@@ -22,7 +27,7 @@ impl From<TokenStream> for Context {
                 TokenTree::Literal(literal) => {
                     if let Some(source) = literal.span().source_text() {
                         println!("Tag:   {source}");
-                        vec.push(Context::Keyword(source));
+                        vec.push(Rule::Keyword(source));
                         continue;
                     }
                     // TODO error: could not unwrap literal
@@ -32,13 +37,13 @@ impl From<TokenStream> for Context {
                     match c {
                         '?' => {
                             if let Some(v) = vec.pop() {
-                                vec.push(Context::Option(Box::new(v)));
+                                vec.push(Rule::Option(Box::new(v)));
                             }
                             // TODO error: `?` was used at the beginning of a scope
                         }
                         '*' => {
                             if let Some(v) = vec.pop() {
-                                vec.push(Context::Repetition(Box::new(v)));
+                                vec.push(Rule::Repetition(Box::new(v)));
                             }
                             // TODO error: `*` was used at the beginning of a scope
                         }
@@ -63,9 +68,9 @@ impl From<TokenStream> for Context {
                     };
 
                     if is_variable {
-                        vec.push(Context::Identifier(st))
+                        vec.push(Rule::Identifier(st))
                     } else {
-                        vec.push(Context::TypeReference(st))
+                        vec.push(Rule::TypeReference(st))
                     };
 
                     println!("Ident: {}", ident.to_string());
@@ -85,7 +90,7 @@ impl From<TokenStream> for Context {
         // println!("attr: \"{attrs:?}\"");
 
         // todo!()
-        Context::Scope(vec)
+        Rule::Scope(vec)
 
         // compile_error!("Not implemented")
     }

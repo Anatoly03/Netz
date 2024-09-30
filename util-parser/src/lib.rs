@@ -1,14 +1,13 @@
-mod attr;
-// mod header;
 mod item;
+mod rule;
 
-use attr::Context;
+use rule::Rule;
 use item::generate;
 use proc_macro::TokenStream;
 
 #[proc_macro_attribute]
 pub fn grammar(attrs: TokenStream, items: TokenStream) -> TokenStream {
-    let context = Context::from(attrs);
+    let context = Rule::from(attrs);
     println!("{context:?}");
 
     generate(&context, items)
