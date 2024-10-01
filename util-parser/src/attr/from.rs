@@ -23,8 +23,7 @@ impl From<TokenStream> for Rule {
                     // TODO error: could not unwrap literal
                 }
                 TokenTree::Punct(punct) => {
-                    let c = punct.as_char();
-                    match c {
+                    match punct.as_char() {
                         '~' => vec.push(Rule::Whitespace),
                         '?' => {
                             if let Some(v) = vec.pop() {

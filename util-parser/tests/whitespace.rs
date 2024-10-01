@@ -6,8 +6,13 @@ mod ws {
     pub struct Whitespace;
 
     #[test]
-    fn parse_whitespace() {
+    fn whitespace() {
         let (input, _) = Whitespace::parse("\t \r\n").unwrap();
         assert_eq!(input, "");
+    }
+
+    #[test]
+    fn no_whitespace() {
+        assert!(Whitespace::parse("").is_err());
     }
 }

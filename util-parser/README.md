@@ -47,4 +47,5 @@ struct Hello3; // Will generate field `string: Vec<String>`, because option cast
 ### Open for Contribution
 
 - Coverage of more Rust grammar syntax.
+- Code Optimizations
 - TODO ...
