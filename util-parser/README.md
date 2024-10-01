@@ -2,6 +2,8 @@
 
 This crate implements utility macros that implement a static parsing method on a struct. 
 
+> And it's also worth noting that this crate isn't even implemented or usable.
+
 ```rs
 #[grammar{ (identifier ":")? type_name }]
 struct Field {
