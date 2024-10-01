@@ -3,6 +3,7 @@ mod into;
 
 #[derive(Debug)]
 pub enum Rule {
+    Whitespace, // ~
     Keyword(String), // "strings"
     Identifier(String), // snake_case
     TypeReference(String), // PascalCase

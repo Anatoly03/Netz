@@ -1,32 +1,19 @@
 mod attr;
 mod item;
 
+// #[cfg(test)]
+// mod tests;
+
+use attr::Rule;
 use item::parse;
 use proc_macro::TokenStream;
-use attr::Rule;
+use quote::quote;
 
 #[proc_macro_attribute]
 pub fn grammar(attrs: TokenStream, items: TokenStream) -> TokenStream {
     let context = Rule::from(attrs);
-    println!("{context:?}");
-
-    parse(&context, items)
-
-    // println!("item: \"{items}\"");
-    // items
+    // println!("{context:?}");
+    let result = parse(context, items);
+    println!("{result}");
+    result
 }
-
-// pub fn add(left: u64, right: u64) -> u64 {
-//     left + right
-// }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-
-//     #[test]
-//     fn it_works() {
-//         let result = add(2, 2);
-//         assert_eq!(result, 4);
-//     }
-// }

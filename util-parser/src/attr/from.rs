@@ -25,6 +25,7 @@ impl From<TokenStream> for Rule {
                 TokenTree::Punct(punct) => {
                     let c = punct.as_char();
                     match c {
+                        '~' => vec.push(Rule::Whitespace),
                         '?' => {
                             if let Some(v) = vec.pop() {
                                 vec.push(Rule::Option(Box::new(v)));

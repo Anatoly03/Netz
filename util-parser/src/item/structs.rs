@@ -1,8 +1,8 @@
 use crate::attr::Rule;
 use proc_macro::TokenStream;
-use quote::ToTokens;
+use quote::{format_ident, quote, ToTokens};
 use std::collections::HashMap;
-use syn::{ItemStruct, Type};
+use syn::{Fields, FieldsNamed, ItemStruct, Type};
 
 fn list_fields(input: &ItemStruct) -> HashMap<String, Type> {
     input
@@ -21,8 +21,9 @@ fn list_fields(input: &ItemStruct) -> HashMap<String, Type> {
         .collect()
 }
 
-pub fn parse_struct(context: &Rule, input: ItemStruct) -> TokenStream {
+pub fn parse_struct(context: Rule, input: ItemStruct) -> TokenStream {
     let name = input.ident.to_string();
+    let name_ident = format_ident!("{}", name);
 
     // TODO use where clauses?
     // TODO instead of panic, use: https://stackoverflow.com/questions/57025894/issuing-a-warning-at-compile-time
@@ -71,5 +72,20 @@ pub fn parse_struct(context: &Rule, input: ItemStruct) -> TokenStream {
 
     println!("{fields:?}");
 
-    input.to_token_stream().into()
+    let definition = quote! {
+        struct #name_ident {
+            local: String
+        }
+    };
+
+    // let definition = input.to_token_stream();
+    let implementation = proc_macro2::TokenStream::from(context.construct(name));
+
+    // println!("D: {definition}");
+    // println!("I: {implementation}");
+
+    quote! {
+        #definition
+        #implementation
+    }.into()
 }
