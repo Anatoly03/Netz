@@ -7,37 +7,32 @@ impl Rule {
         let callback: proc_macro2::TokenStream = Into::<TokenStream>::into(self).into();
         let name_ident = format_ident!("{}", ident);
 
+        // TODO documentation: `whitespace1` 
+        // Expects one whitespace characters and trims the rest,
+        // roughly analogous to regex `\s+`
+
         quote! {
             impl #name_ident {
-                /// Expects one whitespace characters and trims the rest,
-                /// roughly analogous to regex `\s+`
                 fn whitespace1(input: &str) -> Result<(&str, ()), String> {
-                    match = input.chars().next() {
+                    match input.chars().next() {
                         Some(c) if c.is_whitespace() => Ok((input.trim_start(), ())),
                         Some(c) => Err(format!("expected whitespace, got `{}`", c)),
                         None => Err("expected whitespace, got end of string".to_owned()),
                     }
                 }
 
-                /// Sequences the parser through a list of grammar functions
-                fn sequence(input: Vec<T>) -> Result<(&str, ()), String> where
-                    T: Fn(&str) -> Result<(&str, ()), String>
-                {
-                    for closure in input.into_iter() {
-                        closure(input)?;
-                    }
-                    ()
-                }
+                // Sequences the parser through a list of grammar functions
+                // fn sequence(input: Vec<T>) -> Result<(&str, ()), String> where
+                //     T: Fn(&str) -> Result<(&str, ()), String>
+                // {
+                //     for closure in input.into_iter() {
+                //         closure(input)?;
+                //     }
+                //     ()
+                // }
 
-                /// The following function parses the production of
-                ///
-                #[doc = #ident]
-                /// over a string input and returns the new pointer in the
-                /// string and Self as output.
                 pub fn parse(input: &str) -> Result<(&str, &str), String> {
-                    // let _ = #callback
-                //     let (i, o) = #callback (input)?;
-                //     (i, o)
+                    let (input, _) = (#callback)(input)?;
                     Ok((input, ""))
                 }
             }
