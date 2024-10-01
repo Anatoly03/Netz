@@ -13,6 +13,11 @@ impl Rule {
 
         quote! {
             impl #name_ident {
+                // type I = &str;
+
+                // type Out<O> = Result<(&str, O), String>;
+                // type Closure<O> = dyn Fn(&str) -> Out<O>;
+
                 fn whitespace1(input: &str) -> Result<(&str, ()), String> {
                     match input.chars().next() {
                         Some(c) if c.is_whitespace() => Ok((input.trim_start(), ())),
@@ -20,6 +25,15 @@ impl Rule {
                         None => Err("expected whitespace, got end of string".to_owned()),
                     }
                 }
+
+                // fn option(call: Closure<()>) -> Closure<()> {
+                //     move |input: &str| {
+                //         match call(input) {
+                //             Ok(o) => Ok(o),
+                //             Err(_) => Ok((input, ())),
+                //         }
+                //     }
+                // }
 
                 // Sequences the parser through a list of grammar functions
                 // fn sequence(input: Vec<T>) -> Result<(&str, ()), String> where
@@ -32,7 +46,7 @@ impl Rule {
                 // }
 
                 pub fn parse(input: &str) -> Result<(&str, &str), String> {
-                    let (input, _) = (#callback)(input)?;
+                    // let (input, _) = (#callback)(input)?;
                     Ok((input, ""))
                 }
             }
@@ -50,18 +64,11 @@ impl Into<TokenStream> for Rule {
             Rule::Keyword(s) => todo!("keyword not implemented"),
             Rule::Identifier(_) => todo!("identifier not implemented"),
             Rule::TypeReference(_) => todo!("typeReference not implemented"),
-            Rule::Scope(vec) => quote! { |input: &str| -> Result<(&str, ()), String> {
-                if let Some(c) = input.chars().next() {
-                    if c.is_whitespace() {
-                        return Ok((input.trim_start(), ()))
-                    } else {
-                        Err(format!("expected whitespace, got `{}`", c))
-                    }
-                } else {
-                    Err("expected whitespace, got end of string".to_owned())
-                }
-            } },
-            Rule::Option(rule) => todo!("option not implemented"),
+            Rule::Scope(vec) => todo!("scope not implemented"),
+            Rule::Option(rule) => {
+                let stream: proc_macro2::TokenStream = Into::<TokenStream>::into(*rule).into();
+                quote! { Self::option( #stream ) }
+            },
             Rule::Repetition(rule) => todo!("repetition not implemented"),
             Rule::Branch(vec) => todo!("branch not implemented"),
         }

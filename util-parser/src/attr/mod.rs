@@ -39,10 +39,9 @@ pub enum Rule {
     Branch(Vec<Rule>),     // ... | ...
 }
 
-#[derive(Debug)]
-pub enum IdentifierCounter {
-    // None,// default
-    Scalar, // defined
-    Option, // optionally defined
-    Many,   // multiple defined
+#[derive(Debug, PartialEq)]
+pub enum Dimension {
+    Scalar,
+    Option,
+    Many,
 }

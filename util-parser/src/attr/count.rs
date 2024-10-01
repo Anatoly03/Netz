@@ -1,7 +1,7 @@
 //! This module provides a scanner over the rule AST to detect which
 //! fields are of which type.
 
-use super::{IdentifierCounter, Rule};
+use super::{Dimension, Rule};
 use std::collections::HashMap;
 // use util_cases::CaseStyles;
 
@@ -10,7 +10,7 @@ impl Rule {
 
     /// Returns a map of all declared fields and their respective
     /// field type as `syn::ItemType`
-    pub fn get_fields(&self) -> HashMap<String, IdentifierCounter> {
+    pub fn get_fields(&self) -> HashMap<String, Dimension> {
         // match self {
         //     Rule::Whitespace => HashMap::new(),
         //     Rule::Keyword(_) => HashMap::new(),
