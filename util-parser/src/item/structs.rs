@@ -1,17 +1,8 @@
-use std::collections::HashMap;
-
 use crate::rule::Rule;
-use proc_macro::{Delimiter, TokenStream, TokenTree};
+use proc_macro::TokenStream;
 use quote::ToTokens;
-use syn::{parse_macro_input, spanned::Spanned, Field, ItemStruct, Type};
-// use util_cases::CaseStyles;
-
-pub enum IdentifierCounter {
-    // None,// default
-    Scalar, // defined
-    Option, // optionally defined
-    Many,   // multiple defined
-}
+use std::collections::HashMap;
+use syn::{ItemStruct, Type};
 
 fn list_fields(input: &ItemStruct) -> HashMap<String, Type> {
     input
@@ -30,8 +21,7 @@ fn list_fields(input: &ItemStruct) -> HashMap<String, Type> {
         .collect()
 }
 
-pub fn generate(context: &Rule, items: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(items as ItemStruct);
+pub fn parse_struct(context: &Rule, input: ItemStruct) -> TokenStream {
     let name = input.ident.to_string();
 
     // TODO use where clauses?
@@ -59,6 +49,11 @@ pub fn generate(context: &Rule, items: TokenStream) -> TokenStream {
     }
 
     let fields = list_fields(&input);
+
+    // TODO currently expect all structs to be empty and rely generation only on attr
+    if !fields.is_empty() {
+        panic!("The macro [grammar] does not support field parameters")
+    }
 
     // let declared_fields = input
     //     .fields

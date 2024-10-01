@@ -15,10 +15,6 @@ struct Struct;
 
 ### Macro Documentation
 
-**Linking a field**
-
-
-
 - `identifier`: Expected to be declared in the struct, will parse the identifier.
 - `TypeName`: Will automatically add a new field to the structure in snake case. Can only be used once per context, except if one of the types is surrounded
 - `i:T` acts like `T` in grammar, but will write to identifier `i`.

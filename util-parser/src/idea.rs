@@ -1,8 +1,9 @@
 
-#[grammar{ content }]
-pub struct Identifier {
-    content: String,
-}
+#[grammar{ ( '_'* 'a'-'z' ('a'-'Z' | '_') * ) : String }]
+pub struct Identifier;
+
+#[grammar{ ( '0'-'9' + ) : usize }]
+pub struct Integer;
 
 //
 // Records
@@ -14,11 +15,12 @@ pub enum Record {}
 // Structure
 //
 
-#[grammar{ (identifier ":")? type_name }]
-pub struct StructField {
-    identifier: Option<String>,
-    type_name: String,
-}
+#[grammar{ (Identifier ":")? type_name:Identifier }]
+pub struct StructField;
+// {
+//     identifier: Option<String>,
+//     type_name: String,
+// }
 
 #[grammar{ "struct" Identifier? "{" (StructField (";" StructField) * ";" ?)? "}" }]
 pub struct Struct;
@@ -28,11 +30,12 @@ pub struct Struct;
 //
 
 // TODO Rust-Style Enums
-#[grammar{ identifier ("=" value) ? }]
-pub struct EnumField {
-    identifier: String,
-    value: usize,
-}
+#[grammar{ Identifier ("=" value:usize) ? }]
+pub struct EnumField;
+// {
+//     identifier: String,
+//     value: usize,
+// }
 
 #[grammar{ "enum" Identifier? "{"  "}" }]
 pub struct Enum;
