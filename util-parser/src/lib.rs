@@ -1,9 +1,9 @@
+mod attr;
 mod item;
-mod rule;
 
-use rule::Rule;
 use item::parse;
 use proc_macro::TokenStream;
+use attr::Rule;
 
 #[proc_macro_attribute]
 pub fn grammar(attrs: TokenStream, items: TokenStream) -> TokenStream {

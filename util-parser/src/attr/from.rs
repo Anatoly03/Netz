@@ -2,18 +2,8 @@
 //! the grammar inside the macro as a production rule. Consider `[grammar{ "@" ident
 //! }]` for any struct `T` as a production of form `<T> -> "@" <Ident>`.
 
+use super::Rule;
 use proc_macro::{Delimiter, TokenStream, TokenTree};
-
-#[derive(Debug)]
-pub enum Rule {
-    Keyword(String),
-    Identifier(String),
-    TypeReference(String),
-    Scope(Vec<Rule>),
-    Option(Box<Rule>),
-    Repetition(Box<Rule>),
-    Branch(Vec<Rule>),
-}
 
 impl From<TokenStream> for Rule {
     fn from(attrs: TokenStream) -> Self {
@@ -26,7 +16,7 @@ impl From<TokenStream> for Rule {
             match attr {
                 TokenTree::Literal(literal) => {
                     if let Some(source) = literal.span().source_text() {
-                        println!("Tag:   {source}");
+                        // println!("Tag:   {source}");
                         vec.push(Rule::Keyword(source));
                         continue;
                     }
@@ -52,7 +42,7 @@ impl From<TokenStream> for Rule {
                         }
                     }
                     let symbol = punct.as_char();
-                    println!("Punct: {symbol}");
+                    // println!("Punct: {symbol}");
                 }
                 TokenTree::Ident(ident) => {
                     let st = ident.to_string();
@@ -73,7 +63,7 @@ impl From<TokenStream> for Rule {
                         vec.push(Rule::TypeReference(st))
                     };
 
-                    println!("Ident: {}", ident.to_string());
+                    // println!("Ident: {}", ident.to_string());
                 }
                 TokenTree::Group(group) => {
                     match group.delimiter() {

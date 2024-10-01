@@ -1,6 +1,6 @@
 mod structs;
 
-use crate::rule::Rule;
+use crate::attr::Rule;
 use proc_macro::TokenStream;
 use syn::{parse_macro_input, spanned::Spanned, Item};
 
