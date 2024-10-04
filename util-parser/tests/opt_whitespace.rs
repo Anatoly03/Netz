@@ -3,7 +3,7 @@ mod whitespace_opt {
 
     #[grammar(~?)]
     pub struct OptionalWhitespace;
-
+    
     #[test]
     fn whitespace() {
         let (input, _) = OptionalWhitespace::parse("\t \r\n").unwrap();
