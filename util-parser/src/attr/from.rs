@@ -2,6 +2,8 @@
 //! the grammar inside the macro as a production rule. Consider `[grammar{ "@" ident
 //! }]` for any struct `T` as a production of form `<T> -> "@" <Ident>`.
 
+use std::str::FromStr;
+
 use super::Rule;
 use proc_macro::{Delimiter, TokenStream, TokenTree};
 
@@ -15,11 +17,29 @@ impl From<TokenStream> for Rule {
 
             match attr {
                 TokenTree::Literal(literal) => {
-                    if let Some(source) = literal.span().source_text() {
-                        // println!("Tag:   {source}");
-                        vec.push(Rule::Keyword(source));
-                        continue;
+                    match proc_macro2::Literal::from_str(literal.to_string().as_ref()) {
+                        Ok(lit) => match syn::Lit::new(lit) {
+                            syn::Lit::Str(lit_str) => {
+                                vec.push(Rule::Keyword(lit_str.value()));
+                            }
+                            // syn::Lit::ByteStr(lit_byte_str) => todo!(),
+                            // syn::Lit::CStr(lit_cstr) => todo!(),
+                            // syn::Lit::Byte(lit_byte) => todo!(),
+                            // syn::Lit::Char(lit_char) => todo!(),
+                            // syn::Lit::Int(lit_int) => todo!(),
+                            // syn::Lit::Float(lit_float) => todo!(),
+                            // syn::Lit::Bool(lit_bool) => todo!(),
+                            // syn::Lit::Verbatim(literal) => todo!(),
+                            _ => todo!("unparsable literal: {lit}"),
+                        },
+                        Err(e) => {
+                            todo!("handle error: {e}")
+                        }
                     }
+                    // if let Some(source) =  {
+                    //     // println!("Tag:   {source}");
+                    //     continue;
+                    // }
                     // TODO error: could not unwrap literal
                 }
                 TokenTree::Punct(punct) => {

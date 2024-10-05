@@ -27,7 +27,10 @@ impl Into<TokenStream> for Rule {
                 // quote! { Self::whitespace1 }
                 quote! { nom::character::complete::multispace1 }
             }
-            Rule::Keyword(s) => todo!("keyword not implemented"),
+            Rule::Keyword(s) => {
+                println!("s is {s}");
+                quote! { nom::bytes::complete::tag (#s) }
+            }
             Rule::Identifier(_) => todo!("identifier not implemented"),
             Rule::TypeReference(_) => todo!("typeReference not implemented"),
             Rule::Scope(vec) => todo!("scope not implemented"),
