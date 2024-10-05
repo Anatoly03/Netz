@@ -21,7 +21,7 @@ mod keyword {
 
     #[test]
     fn construct() {
-        let (input, _) = Construct::parse("struct \t\n { \t\n } \t\n").unwrap();
+        let (input, _) = Construct::parse("struct \t\n { \t\n\n } \t\n").unwrap();
         assert_eq!(input, " \t\n");
     }
 
