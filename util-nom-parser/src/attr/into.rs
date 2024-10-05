@@ -24,7 +24,6 @@ impl Into<TokenStream> for Rule {
             // Whitespace is an atomic lambda. It will expect one whitespace
             // character and trim the start.
             Rule::Whitespace => {
-                // quote! { Self::whitespace1 }
                 quote! { nom::character::complete::multispace1 }
             }
             Rule::Keyword(s) => {

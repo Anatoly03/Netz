@@ -7,13 +7,16 @@ use std::str::FromStr;
 use super::Rule;
 use proc_macro::{Delimiter, TokenStream, TokenTree};
 
+fn error(span: proc_macro::Span, msg: impl std::fmt::Display) -> TokenStream {
+    syn::Error::new(span.into(), msg).to_compile_error().into()
+}
+
 impl From<TokenStream> for Rule {
     fn from(attrs: TokenStream) -> Self {
         let mut vec = Vec::new();
 
         for attr in attrs.clone().into_iter() {
-            // let span = attr.span().into();
-            // let error = |msg: &dyn Display| syn::Error::new(span, msg).to_compile_error();
+            let span = attr.span();
 
             match attr {
                 TokenTree::Literal(literal) => {
@@ -36,54 +39,39 @@ impl From<TokenStream> for Rule {
                             todo!("handle error: {e}")
                         }
                     }
-                    // if let Some(source) =  {
-                    //     // println!("Tag:   {source}");
-                    //     continue;
-                    // }
-                    // TODO error: could not unwrap literal
                 }
-                TokenTree::Punct(punct) => {
-                    match punct.as_char() {
-                        '~' => vec.push(Rule::Whitespace),
-                        '?' => {
-                            if let Some(v) = vec.pop() {
-                                vec.push(Rule::Option(Box::new(v)));
-                            }
-                            // TODO error: `?` was used at the beginning of a scope
-                        }
-                        '*' => {
-                            if let Some(v) = vec.pop() {
-                                vec.push(Rule::Repetition(Box::new(v)));
-                            }
-                            // TODO error: `*` was used at the beginning of a scope
-                        }
-                        _ => {
-                            // TODO error: expected one of `?` or `*`, got `{c}`
-                        }
+                TokenTree::Punct(punct) => match punct.as_char() {
+                    '~' => vec.push(Rule::Whitespace),
+                    '?' => match vec.pop() {
+                        Some(v) => vec.push(Rule::Option(Box::new(v))),
+                        None => {}, // TODO error: `?` was used at the beginning of a scope
                     }
-                    let symbol = punct.as_char();
-                    // println!("Punct: {symbol}");
-                }
+                    '*' => match vec.pop() {
+                        Some(v) => vec.push(Rule::Repetition(Box::new(v))),
+                        None => {}, // TODO error: `*` was used at the beginning of a scope
+                    }
+                    _ => {
+                        // TODO error: expected one of `?` or `*`, got `{c}`
+                    }
+                },
                 TokenTree::Ident(ident) => {
                     let st = ident.to_string();
                     let mut iter = st.chars();
 
-                    let is_variable = loop {
-                        match iter.next() {
-                            Some(c) if c.is_ascii_uppercase() => break false,
-                            Some(c) if c.is_ascii_lowercase() => break true,
-                            Some(c) => continue,
-                            None => break true,
-                        }
+                    let rl = loop {
+                        break match iter.next() {
+                            // Identifiers that start with an uppercase letter are type references.
+                            Some(c) if c.is_ascii_uppercase() => Rule::TypeReference(st),
+                            // Identifiers that start with a lowercase letter are field identifiers.
+                            Some(c) if c.is_ascii_lowercase() => Rule::Identifier(st),
+                            // Identifiers that start with `_` inherit the kind from the first letter.
+                            Some(_) => continue,
+                            // TODO If we reach the end, we should decide if it is a variable or panic.
+                            None => Rule::Identifier(st),
+                        };
                     };
 
-                    if is_variable {
-                        vec.push(Rule::Identifier(st))
-                    } else {
-                        vec.push(Rule::TypeReference(st))
-                    };
-
-                    // println!("Ident: {}", ident.to_string());
+                    vec.push(rl);
                 }
                 TokenTree::Group(group) => {
                     match group.delimiter() {
