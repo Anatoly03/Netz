@@ -48,15 +48,17 @@ impl Into<TokenStream> for Rule {
                     }
                     None => {
                         panic!("empty scope")
-                    },
+                    }
                 }
             }
             Rule::Option(rule) => {
                 let stream: proc_macro2::TokenStream = Into::<TokenStream>::into(*rule).into();
-                // quote! { Self::option( #stream ) }
                 quote! { nom::combinator::opt( #stream ) }
             }
-            Rule::Repetition(rule) => todo!("repetition not implemented"),
+            Rule::Repetition(rule) => {
+                let stream: proc_macro2::TokenStream = Into::<TokenStream>::into(*rule).into();
+                quote! { nom::multi::many0( #stream ) }
+            }
             Rule::Branch(vec) => todo!("branch not implemented"),
         }
         .into()
