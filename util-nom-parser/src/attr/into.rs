@@ -28,12 +28,29 @@ impl Into<TokenStream> for Rule {
                 quote! { nom::character::complete::multispace1 }
             }
             Rule::Keyword(s) => {
-                println!("s is {s}");
                 quote! { nom::bytes::complete::tag (#s) }
             }
             Rule::Identifier(_) => todo!("identifier not implemented"),
             Rule::TypeReference(_) => todo!("typeReference not implemented"),
-            Rule::Scope(vec) => todo!("scope not implemented"),
+            Rule::Scope(vec) => {
+                if vec.len() > 20 {
+                    panic!("a sequence of more than twenty elements is currently not supported")
+                }
+
+                let mut vec2 = vec
+                    .into_iter()
+                    .map(|v| Into::<proc_macro2::TokenStream>::into(Into::<TokenStream>::into(v)));
+
+                match vec2.next() {
+                    Some(k) => {
+                        let s = vec2.fold(k, |a, b| quote! {#a , #b});
+                        quote! { nom::sequence::tuple ((#s)) }
+                    }
+                    None => {
+                        panic!("empty scope")
+                    },
+                }
+            }
             Rule::Option(rule) => {
                 let stream: proc_macro2::TokenStream = Into::<TokenStream>::into(*rule).into();
                 // quote! { Self::option( #stream ) }
