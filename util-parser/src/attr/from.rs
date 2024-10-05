@@ -30,7 +30,7 @@ impl From<TokenStream> for Rule {
                             // syn::Lit::Float(lit_float) => todo!(),
                             // syn::Lit::Bool(lit_bool) => todo!(),
                             // syn::Lit::Verbatim(literal) => todo!(),
-                            _ => todo!("unparsable literal: {lit}"),
+                            other => todo!("unparsable literal: {other:?}"),
                         },
                         Err(e) => {
                             todo!("handle error: {e}")
