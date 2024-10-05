@@ -4,6 +4,7 @@ mod count;
 mod from;
 mod into;
 mod optimize;
+mod prod_type;
 
 /// A Rule is an AST of a regular expression, which is
 /// declared in the scope of the macro as an attribute.
