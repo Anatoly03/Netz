@@ -1,5 +1,5 @@
 mod whitespace_opt {
-    use util_parser::grammar;
+    use util_nom_parser::grammar;
 
     #[grammar(~?)]
     pub struct OptionalWhitespace;

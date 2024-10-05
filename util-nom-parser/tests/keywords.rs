@@ -1,5 +1,5 @@
 mod keyword {
-    use util_parser::grammar;
+    use util_nom_parser::grammar;
 
     #[grammar("keyword")]
     pub struct Keyword ();
