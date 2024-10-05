@@ -27,14 +27,17 @@ impl Rule {
             // Assert: `Repetition(Option(X)) = Repetition(X)`
             // Assert: `Repetition(Repetition(X)) = Repetition(X)`
             Rule::Repetition(s) => match *s {
-                Rule::Repetition(k) | Rule::Option(k) => {
-                    Rule::Repetition(Box::new(k.optimize()))
-                }
-                k => Rule::Repetition(Box::new(k.optimize()))
+                Rule::Repetition(k) | Rule::Option(k) => Rule::Repetition(Box::new(k.optimize())),
+                // Assert: `Repetition(Scope([X])) = Repetition(X)`
+                // ^^^^^^^ Will be done automatically with optimize
+                // Rule::Scope(vec) if vec.len() == 1 => {
+                //     Rule::Repetition(Box::new(vec.into_iter().next().unwrap().optimize()))
+                // }
+                k => Rule::Repetition(Box::new(k.optimize())),
             },
 
             // Rule::Whitespace => todo!(),
-            // Rule::Keyword(_) => todo!(), 
+            // Rule::Keyword(_) => todo!(),
             // Rule::Identifier(_) => todo!(),
             // Rule::TypeReference(_) => todo!(),
             // Rule::Repetition(rule) => todo!(),
