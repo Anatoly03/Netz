@@ -50,9 +50,7 @@ impl From<TokenStream> for Rule {
                         Some(v) => vec.push(Rule::Repetition(Box::new(v))),
                         None => {}, // TODO error: `*` was used at the beginning of a scope
                     }
-                    _ => {
-                        // TODO error: expected one of `?` or `*`, got `{c}`
-                    }
+                    _ => {}, // TODO error: expected one of `?` or `*`, got `{c}`
                 },
                 TokenTree::Ident(ident) => {
                     let st = ident.to_string();
