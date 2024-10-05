@@ -17,18 +17,26 @@ impl Rule {
             // A scope of one element is the optimized element itself.
             // Assert: `Scope([X]) = X`
             Rule::Scope(vec) if vec.len() == 1 => vec.into_iter().next().unwrap().optimize(),
+
             // A non-scalar nested in an option is itself.
             // Assert: `Option(Option(X)) = Option(X)`
             // Assert: `Option(Repetition(X)) = Repetition(X)`
             Rule::Option(s) if s.dimension() != Dimension::Scalar => s.optimize(),
 
-            // Rule::Repetition(s) if s.dimension() == Dimension::Many => s.optimize(),
+            // A non-scalar nested in a repetition is itself.
+            // Assert: `Repetition(Option(X)) = Repetition(X)`
+            // Assert: `Repetition(Repetition(X)) = Repetition(X)`
+            Rule::Repetition(s) => match *s {
+                Rule::Repetition(k) | Rule::Option(k) => {
+                    Rule::Repetition(Box::new(k.optimize()))
+                }
+                k => Rule::Repetition(Box::new(k.optimize()))
+            },
 
             // Rule::Whitespace => todo!(),
             // Rule::Keyword(_) => todo!(), 
             // Rule::Identifier(_) => todo!(),
             // Rule::TypeReference(_) => todo!(),
-            // Rule::Option(rule) => todo!(),
             // Rule::Repetition(rule) => todo!(),
             // Rule::Branch(vec) => todo!(),
             _ => self,
