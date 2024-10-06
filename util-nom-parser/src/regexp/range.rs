@@ -53,8 +53,6 @@ impl From<TokenStream> for RegexpRange {
         let mut iter = attrs.clone().into_iter();
         let mut buffer: Option<String> = None;
 
-        // TODO fix bug where `["aA0" - "zZ9" | "_"]` does not add `_`, adds `a`, `A` and `0` as selects.
-
         while let Some(attr) = iter.next() {
             match attr {
                 TokenTree::Literal(literal) => {
@@ -81,6 +79,8 @@ impl From<TokenStream> for RegexpRange {
                             for (fr, t) in from.chars().zip(to.chars()) {
                                 range.ranges.push((fr, t));
                             }
+
+                            buffer = None;
                         }
                         _ => {} // TODO error: `-` was used at the beginning or end of a scope or the separator `|`
                     },
@@ -103,6 +103,10 @@ impl From<TokenStream> for RegexpRange {
             }
 
             // None => break,
+        }
+
+        if let Some(k) = buffer {
+            range.select += k.as_ref();
         }
 
         range
