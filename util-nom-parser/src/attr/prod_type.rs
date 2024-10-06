@@ -24,6 +24,10 @@ pub enum ProductionType {
     /// an element matters.
     /// 
     /// This is the default type for all identifiers.
+    /// 
+    /// ```rs
+    /// #[grammar{ ( 'a' - 'z' * ) : String }]
+    /// ```
     String,
 
     /// Production Type `Int` specifies that a number will be read.

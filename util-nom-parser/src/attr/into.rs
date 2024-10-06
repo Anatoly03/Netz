@@ -58,6 +58,7 @@ impl Into<TokenStream> for Rule {
                 let stream: proc_macro2::TokenStream = Into::<TokenStream>::into(*rule).into();
                 quote! { nom::multi::many0( #stream ) }
             }
+            Rule::Range(_) => todo!("range not implemented"),
             Rule::Branch(vec) => todo!("branch not implemented"),
         }
         .into()

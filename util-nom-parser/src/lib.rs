@@ -1,5 +1,6 @@
 mod attr;
 mod item;
+mod regexp;
 
 use attr::Rule;
 use item::parse;

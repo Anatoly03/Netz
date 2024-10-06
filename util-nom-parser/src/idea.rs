@@ -1,5 +1,8 @@
 
-#[grammar{ ( '_'* 'a'-'z' ('a'-'Z' | '_') * ) : String }]
+// #[grammar{ ( '_'* 'a'-'z' ('a'-'Z' | '_') * ) : String }]
+// pub struct Identifier;
+
+#[grammar{ ( '_'* ['a'-'z'] ["aA0" - "zZ9" | '_'] * ) : String }]
 pub struct Identifier;
 
 #[grammar{ ( '0'-'9' + ) : usize }]

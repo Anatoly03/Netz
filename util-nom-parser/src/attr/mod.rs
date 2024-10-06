@@ -1,4 +1,4 @@
-//! The attribute of the `grammar` macro is a 
+//! The attribute of the `grammar` macro is a
 
 mod count;
 mod from;
@@ -6,9 +6,11 @@ mod into;
 mod optimize;
 mod prod_type;
 
+use crate::regexp::RegexpRange;
+
 /// A Rule is an AST of a regular expression, which is
 /// declared in the scope of the macro as an attribute.
-/// 
+///
 /// ```rs
 /// #[grammar{ RULE }] // Here the production `<STRUCT> -> RULE` is declared
 /// struct STRUCT;
@@ -27,17 +29,19 @@ pub enum Rule {
     /// keyword and consume it or abort.
     Keyword(String),
     /// TODO
-    Identifier(String),    // snake_case
+    Identifier(String), // snake_case
     /// TODO
     TypeReference(String), // PascalCase
     /// TODO
-    Scope(Vec<Rule>),      // concatenation
+    Scope(Vec<Rule>), // concatenation
     /// TODO
-    Option(Box<Rule>),     // (option) ?
+    Option(Box<Rule>), // (option) ?
     /// TODO
     Repetition(Box<Rule>), // () *
     /// TODO
-    Branch(Vec<Rule>),     // ... | ...
+    Range(RegexpRange), // range - range
+    /// TODO
+    Branch(Vec<Rule>), // ... | ...
 }
 
 #[derive(Debug, PartialEq)]
