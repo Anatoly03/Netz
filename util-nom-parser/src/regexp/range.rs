@@ -30,6 +30,18 @@ impl RegexpRange {
             select: String::new(),
         }
     }
+
+    // fn optimize(mut self) -> Self {
+    //     self.ranges = self.ranges.into_iter().map(|(from, to)| {
+    //         if from > to {
+    //             (to, from)
+    //         } else {
+    //             (from, to)
+    //         }
+    //     }).collect();
+
+    //     self
+    // }
 }
 
 fn literal_to_string(literal: Literal) -> String {
@@ -90,7 +102,7 @@ impl From<TokenStream> for RegexpRange {
                     "NUM" => range.ranges.push(('0', '9')),
                     "LOWER" => range.ranges.push(('a', 'z')),
                     "UPPER" => range.ranges.push(('A', 'Z')),
-                    "ALPHA" => range.ranges.push(('a', 'Z')),
+                    "ALPHA" => range.ranges.append(&mut vec![('a', 'z'), ('A', 'Z')]),
                     "SPACE" => range.select += "\r\n\t ",
                     id => panic!("unknown identifier in regexp range pattern: {id}"),
                 },
@@ -101,8 +113,6 @@ impl From<TokenStream> for RegexpRange {
                     )
                 }
             }
-
-            // None => break,
         }
 
         if let Some(k) = buffer {
@@ -114,7 +124,7 @@ impl From<TokenStream> for RegexpRange {
 }
 
 impl Into<TokenStream> for RegexpRange {
-    fn into(self) -> TokenStream {
+    fn into(mut self) -> TokenStream {
         // TODO self = self.optimize();
 
         let select = {
