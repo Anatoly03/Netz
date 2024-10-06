@@ -53,6 +53,8 @@ impl From<TokenStream> for RegexpRange {
         let mut iter = attrs.clone().into_iter();
         let mut buffer: Option<String> = None;
 
+        // TODO fix bug where `["aA0" - "zZ9" | "_"]` does not add `_`, adds `a`, `A` and `0` as selects.
+
         while let Some(attr) = iter.next() {
             match attr {
                 TokenTree::Literal(literal) => {
@@ -114,25 +116,25 @@ impl Into<TokenStream> for RegexpRange {
         let select = {
             let mut crs = self.select.chars();
             crs.next()
-                .map(|first| crs.fold(quote! { #first }, |a, b| quote! { #a || #b }))
+                .map(|first| crs.fold(quote! { #first }, |a, b| quote! { #a | #b }))
         }
         .unwrap_or(TokenStream::from_str("_ if false").unwrap());
 
         let ranges = {
             let mut crs = self.ranges.into_iter();
             crs.next().map(|(from, to)| {
-                let from = from as usize;
-                let to = to as usize;
+                // let from = from as usize;
+                // let to = to as usize;
                 crs.fold(
                     quote! { #from ..= #to },
-                    |acc, (from, to)| quote! { #acc || #from ..= #to },
+                    |acc, (from, to)| quote! { #acc | #from ..= #to },
                 )
             })
         }
         .unwrap_or(TokenStream::from_str("_ if false").unwrap());
 
         quote! {
-            |c: char| match c as usize {
+            |c: char| match c {
                 #select => true,
                 #ranges => true,
                 _ => false,
