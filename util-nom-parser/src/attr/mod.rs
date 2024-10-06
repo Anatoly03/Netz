@@ -4,7 +4,6 @@ mod count;
 mod from;
 mod into;
 mod optimize;
-mod prod_type;
 
 use crate::regexp::RegexpRange;
 
