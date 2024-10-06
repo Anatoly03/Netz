@@ -3,9 +3,7 @@
 //! }]` for any struct `T` as a production of form `<T> -> "@" <Ident>`.
 
 use std::str::FromStr;
-
-use super::Rule;
-use crate::regexp::RegexpRange;
+use crate::regexp::{Rule, RegexpRange};
 use proc_macro::{Delimiter, TokenStream, TokenTree};
 
 fn error(span: proc_macro::Span, msg: impl std::fmt::Display) -> TokenStream {

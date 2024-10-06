@@ -2,7 +2,7 @@ mod attr;
 mod item;
 mod regexp;
 
-use attr::Rule;
+use regexp::Rule;
 use item::parse;
 use proc_macro::TokenStream;
 

@@ -1,4 +1,4 @@
-use crate::attr::Rule;
+use crate::regexp::Rule;
 use proc_macro::TokenStream;
 use quote::{format_ident, quote, ToTokens};
 use std::collections::HashMap;
