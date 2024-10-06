@@ -12,7 +12,6 @@ impl Rule {
     /// field type as `syn::ItemType`
     pub fn get_fields(&self, map: &mut HashMap<String, Dimension>) {
         match self {
-            // 
             Rule::Identifier(ident) => {
                 let ident = &ident.to_snake_case();
                 match map.get(ident) {

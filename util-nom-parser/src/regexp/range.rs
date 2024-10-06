@@ -3,6 +3,8 @@
 //! character ranges and no sequencing of those.
 
 use proc_macro2::{Literal, TokenStream, TokenTree};
+use quote::quote;
+use std::str::FromStr;
 use syn::Lit;
 
 /// A regular expression range, surrounded by brackets, is a part of
@@ -80,18 +82,16 @@ impl From<TokenStream> for RegexpRange {
                         }
                         _ => {} // TODO error: `-` was used at the beginning or end of a scope or the separator `|`
                     },
-                    chr => panic!("expected `|` or `-`, got {chr}")
+                    chr => panic!("expected `|` or `-`, got {chr}"),
                 },
-                TokenTree::Ident(ident) => {
-                    match ident.to_string().as_str() {
-                        "NUM" => range.ranges.push(('0', '9')),
-                        "LOWER" => range.ranges.push(('a', 'z')),
-                        "UPPER" => range.ranges.push(('A', 'Z')),
-                        "ALPHA" => range.ranges.push(('a', 'Z')),
-                        "SPACE" => range.select += "\r\n\t ",
-                        id => panic!("unknown identifier in regexp range pattern: {id}")
-                    }
-                }
+                TokenTree::Ident(ident) => match ident.to_string().as_str() {
+                    "NUM" => range.ranges.push(('0', '9')),
+                    "LOWER" => range.ranges.push(('a', 'z')),
+                    "UPPER" => range.ranges.push(('A', 'Z')),
+                    "ALPHA" => range.ranges.push(('a', 'Z')),
+                    "SPACE" => range.select += "\r\n\t ",
+                    id => panic!("unknown identifier in regexp range pattern: {id}"),
+                },
                 TokenTree::Group(group) => {
                     panic!(
                         "a {:?} group expression cannot be inside a regexp range",
@@ -107,8 +107,36 @@ impl From<TokenStream> for RegexpRange {
     }
 }
 
-// impl Into<TokenStream> for RegexpRange {
-//     fn into(self) -> TokenStream {
-//         todo!()
-//     }
-// }
+impl Into<TokenStream> for RegexpRange {
+    fn into(self) -> TokenStream {
+        // TODO self = self.optimize();
+
+        let select = {
+            let mut crs = self.select.chars();
+            crs.next()
+                .map(|first| crs.fold(quote! { #first }, |a, b| quote! { #a || #b }))
+        }
+        .unwrap_or(TokenStream::from_str("_ if false").unwrap());
+
+        let ranges = {
+            let mut crs = self.ranges.into_iter();
+            crs.next().map(|(from, to)| {
+                let from = from as usize;
+                let to = to as usize;
+                crs.fold(
+                    quote! { #from ..= #to },
+                    |acc, (from, to)| quote! { #acc || #from ..= #to },
+                )
+            })
+        }
+        .unwrap_or(TokenStream::from_str("_ if false").unwrap());
+
+        quote! {
+            |c: char| match c as usize {
+                #select => true,
+                #ranges => true,
+                _ => false,
+            }
+        }
+    }
+}
