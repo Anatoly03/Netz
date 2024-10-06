@@ -42,10 +42,3 @@ pub enum Rule {
     /// TODO
     Branch(Vec<Rule>), // ... | ...
 }
-
-#[derive(Debug, PartialEq)]
-pub enum Dimension {
-    Scalar,
-    Option,
-    Many,
-}

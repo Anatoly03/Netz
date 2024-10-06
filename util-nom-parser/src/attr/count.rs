@@ -1,7 +1,8 @@
 //! This module provides a scanner over the rule AST to detect which
 //! fields are of which type.
 
-use super::{Dimension, Rule};
+use super::Rule;
+use crate::regexp::Dimension;
 use std::collections::HashMap;
 use util_cases::CaseStyles;
 

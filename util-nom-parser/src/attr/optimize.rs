@@ -1,4 +1,6 @@
-use super::{Dimension, Rule};
+use super::Rule;
+
+use crate::regexp::Dimension;
 
 impl Rule {
     /// Returns the dimension (scalar, optional or many) of a
